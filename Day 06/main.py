@@ -9,9 +9,6 @@ def read_lines(file: str) -> list:
         return [line.strip() for line in file]
 
 
-small_input: list[str] = read_lines(s)
-large_input: list[str] = read_lines(l)
-
 # U - UP, R - RIGHT, D - DOWN, L - LEFT
 turn = {
     "U": "R",
@@ -58,13 +55,13 @@ def change_direction(direction):
 
 
 def starting_point_position(engine):
-    for x, engine_line in enumerate(engine):
-        for y, char in enumerate(engine_line):
-            if engine[y][x] == "^":
+    for y, engine_line in enumerate(engine):
+        for x, char in enumerate(engine_line):
+            if char == "^":
                 return x, y
 
 
-def next_step(engine, directions, x, y, direction):
+def next_step(directions, x, y, direction):
     dx, dy = directions[direction]
     return x + dx, y + dy
 
@@ -74,17 +71,72 @@ def path(engine):
     starting_point = starting_point_position(engine)
     x, y = starting_point
     visited = set()
-    while not path_ends(engine, directions, x, y, direction):
+    count_visit = 0
+    while not path_ends(engine, directions, x, y,
+                        direction) and count_visit < 6001:  # need to provide bigger number that first part visited (evenmore times)# I try for 600001 and also get the same result
         visited.add(starting_point)
         if is_obstacle(engine, directions, x, y, direction):
             direction = change_direction(direction)
+        elif count_visit == 6000:
+            return 6000
+
         else:
-            x, y = next_step(engine, directions, x, y, direction)
+            x, y = next_step(directions, x, y, direction)
             visited.add((x, y))
+            count_visit += 1
     return len(visited)
 
 
+# do not put an obstacle in front of an starting point df y - 1
+def coordinate_where_dots(engine):
+    starting_point = starting_point_position(engine)
+    x0, y0 = starting_point
+
+    set_of_dots = set()
+    for y, engine_line in enumerate(engine):
+        for x, char in enumerate(engine_line):
+            if char == "." and char != '^':
+                set_of_dots.add((x, y))
+    # exclude in front of starting point
+    set_of_dots.remove((x0, y0 - 1))
+    return set_of_dots
+
+
+def list_of_engines_with_additional_obstacles(engine):
+    list_of_engine_with_obstacles = []
+    for x0, y0 in coordinate_where_dots(engine):
+        dots_engine = []
+        for y, engine_line in enumerate(engine):
+            new_line = ""
+            for x, char in enumerate(engine_line):
+                if x0 == x and y0 == y and char != "^":
+                    new_line += "#"
+                else:
+                    new_line += char
+            dots_engine.append(new_line)
+        list_of_engine_with_obstacles.append(dots_engine)
+    return list_of_engine_with_obstacles
+
+
+def count_looped_engines(engine):
+    count_looped = 0
+    for engine_with_new_obstacle in list_of_engines_with_additional_obstacles(engine):
+        if path(engine_with_new_obstacle) == 6000:
+            count_looped += 1
+    return count_looped
+
+
+def count_dot_in_engine(engine):
+    count_dot = 0
+    for y, engine_line in enumerate(engine):
+        for x, char in enumerate(engine_line):
+            if char == ".":
+                count_dot += 1
+    return count_dot
+
+
 print("First part: ", path(add_star(read_lines(l))))
+print("Second part: ", count_looped_engines(add_star(read_lines(l))))
 
 
 class TestFunctions(unittest.TestCase):
@@ -95,3 +147,17 @@ class TestFunctions(unittest.TestCase):
     def test_path(self):
         self.assertEqual(path(self.small_engine), 41)
         self.assertEqual(path(self.engine), 4982)
+
+    def test_count_looped_engines(self):
+        self.assertEqual(count_looped_engines(self.small_engine), 6)
+
+    def test_count_new_engines(self):
+        # 16082 new engines with an additional obstacle for large engine
+        self.assertEqual(count_dot_in_engine(self.small_engine) - 1,
+                         (len(list_of_engines_with_additional_obstacles(self.small_engine))))
+        self.assertEqual(count_dot_in_engine(self.engine) - 1,
+                         (len(list_of_engines_with_additional_obstacles(self.engine))))
+
+    def test_count_looped_engines_big_engine(self):
+        # final solution
+        self.assertEqual(count_looped_engines(self.engine), 1663)
