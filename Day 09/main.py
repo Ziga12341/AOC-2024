@@ -41,13 +41,14 @@ def id_assigment(file_path: str):
 # 00...111...2...333.44.5555.6666.777.888899 - > 0099811188827773336446555566..............
 def replace_dot_with_last_element(file_path: str):
     arranged_disk_map = id_assigment(file_path)[0]
-    reversed_digits = [number for number in reversed(id_assigment(file_path)[1])]
+    reversed_digits = "".join(str(number) for number in reversed(id_assigment(file_path)[1]))
     numbers_in_disk_map = len([number for number in arranged_disk_map if number.isdigit()])
     new_arranged_disk_map = ""
     for i, number in enumerate(arranged_disk_map):
         if i < numbers_in_disk_map:
             if not number.isdigit() and reversed_digits:
-                new_arranged_disk_map += str(reversed_digits.pop(0))
+                new_arranged_disk_map += reversed_digits[0]
+                reversed_digits = reversed_digits[1:]
             else:
                 new_arranged_disk_map += number
     return new_arranged_disk_map
