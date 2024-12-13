@@ -64,43 +64,57 @@ def stop_position(engine, directions, x, y, direction):
     return engine[y + dy][x + dx] == "9"
 
 
-def valid_next_step_positions(engine, directions, x, y, current_trail_height: str):
+def valid_next_step_positions(engine, directions, x, y, next_trail_height: str):
     valid_positions = []
     for direction in directions:
-        next_position = next_step_valid_position(engine, directions, x, y, direction, current_trail_height)
+        next_position = next_step_valid_position(engine, directions, x, y, direction, next_trail_height)
         if next_position:
             x0, y0 = next_position
-            if engine[y0][x0] == str(int(current_trail_height)):
+            if engine[y0][x0] == str(int(next_trail_height)):
                 valid_positions.append(next_position)
     return valid_positions
 
 
-print(valid_next_step_positions(add_star(small_input), directions, 2, 1, "8"))  # why just one position?
-print(valid_next_step_positions(add_star(small_input), directions, 2, 1, "0"))  # why just one position?
+print(valid_next_step_positions(add_star(small_input), directions, 2, 1, "8"))  # two positions
+print(valid_next_step_positions(add_star(small_input), directions, 2, 1, "0"))  # one position
+print(valid_next_step_positions(add_star(small_input), directions, 5, 1, "1"))  # three positions
 
+
+# 89010123
+# 78121874
+# 87430965
+# 96549874
+# 45678903
+# 32019012
+# 01329801
+# 10456732
 
 # do not work yet
-def is_valid_path(engine, directions, starting_point):
+def is_valid_path(engine, directions, starting_point, depth):
     x, y = starting_point  # starts on 0
     next_position = [starting_point]
-    start_on = "9876543210"
-    list_of_valid_positions = valid_next_step_positions(engine, directions, x, y, start_on)
+    x0, y0 = next_position[-1]
+    list_of_valid_positions = valid_next_step_positions(engine, directions, x0, y0, starting_point)
+    for next_step_positions in list_of_valid_positions:
+        next_position.append(next_step_positions)
     # stop condition
-    if len(list_of_valid_positions) == 1:
-        x, y = list_of_valid_positions[0]
-        next_position.extend((x, y))
-    if len(list_of_valid_positions) > 1:
-        print(
-            f"three is not one valid position, valid positions: {len(valid_next_step_positions(engine, directions, x, y, start_on))}")
+    # if starting point is 9 - count how
+    if depth == 9:
+        print(next_position[-1])
+
+        return len(next_position)
     else:
-        print(f"no valid")
-        return False
-    return len(next_position) == 9
+        return is_valid_path(engine, directions, starting_point, depth + 1)
+
+
+print('valid path')
+is_valid_path(add_star(small_input), directions, (5, 1), depth=0)
+print('end')
 
 
 def count_valid_paths(engine, directions):
     starting_points = possible_trails_only_first_position(engine)
-    return sum(is_valid_path(engine, directions, starting_point) for starting_point in starting_points)
+    return sum(is_valid_path(engine, directions, starting_point, depth=0) for starting_point in starting_points)
 
 
 print("Part 1: ", count_valid_paths(add_star(small_input), directions))
