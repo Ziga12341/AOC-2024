@@ -41,8 +41,9 @@ def get_locations_of_antionodes_for_the_same_frequency(grid, set_of_antennas):
         x, y = antena_1
         for antena_2 in set_of_antennas:
             x0, y0 = antena_2
-
-            set_all_antinodes_of_frequency = set_all_antinodes_of_frequency.union(get_antinodes_location(grid, x, y, x0, y0))
+            if antena_1 != antena_2:
+                set_all_antinodes_of_frequency = set_all_antinodes_of_frequency.union(
+                    get_antinodes_location(grid, x, y, x0, y0))
     return set_all_antinodes_of_frequency
 
 
@@ -58,12 +59,16 @@ def get_all_frequencies_antennas_location(grid):
 def count_antinodes(grid):
     all_antinodes = set()
     for char, set_of_antenna_location in get_all_frequencies_antennas_location(grid).items():
-        all_antinodes = all_antinodes.union(get_locations_of_antionodes_for_the_same_frequency(grid, set_of_antenna_location))
+        all_antinodes = all_antinodes.union(
+            get_locations_of_antionodes_for_the_same_frequency(grid, set_of_antenna_location))
     return len(all_antinodes)
+
 
 print("First part: ", count_antinodes(small_input))
 print("First part: ", count_antinodes(large_input))
 
+
+# 323 - too high
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input: list[str] = read_lines(s)
@@ -71,3 +76,6 @@ class TestFunctions(unittest.TestCase):
     def test_get_antinodes_location(self):
         self.assertEqual(get_antinodes_location(self.small_input, 8, 1, 5, 2), {(11, 0), (2, 3)})
         self.assertEqual(get_antinodes_location(self.small_input, 8, 1, 7, 3), {(6, 5)})
+
+    def test_count_antinodes(self):
+        self.assertEqual(count_antinodes(self.small_input), 14)
