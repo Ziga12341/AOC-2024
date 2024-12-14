@@ -50,7 +50,8 @@ def get_all_frequencies_antennas_location(grid):
     all_frequencies = defaultdict(set)
     for y, engine_line in enumerate(grid):
         for x, char in enumerate(engine_line):
-            all_frequencies[char].add((x, y))
+            if char.isdigit() or char.isalpha():
+                all_frequencies[char].add((x, y))
     return all_frequencies
 
 
