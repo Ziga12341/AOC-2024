@@ -15,41 +15,41 @@ large_input: list[str] = read_lines(l)
 
 
 def get_antinodes_location(grid: list[str], x, y, x0, y0) -> set:
-    collect_antiondes = set()
+    collect_antinodes = set()
 
     dx_first, dy_first = x - x0, y - y0
     dx_second, dy_second = x0 - x, y0 - y
 
     # candidates for antinodes:
-    x_anti_first, y_anit_first = x + dx_first, y + dy_first
+    x_anti_first, y_anti_first = x + dx_first, y + dy_first
     x_anti_second, y_anti_second = x0 + dx_second, y0 + dy_second
 
-    if 0 <= x_anti_first < len(grid[0]) and 0 <= y_anit_first < len(grid):
-        collect_antiondes.add((x_anti_first, y_anit_first))
+    if 0 <= x_anti_first < len(grid[0]) and 0 <= y_anti_first < len(grid):
+        collect_antinodes.add((x_anti_first, y_anti_first))
 
     if 0 <= x_anti_second < len(grid[0]) and 0 <= y_anti_second < len(grid):
-        collect_antiondes.add((x_anti_second, y_anti_second))
+        collect_antinodes.add((x_anti_second, y_anti_second))
 
-    return collect_antiondes
+    return collect_antinodes
 
 
 def get_antinodes_location_with_resonant_harmonics(grid: list[str], x, y, x0, y0) -> set:
-    collect_antiondes = set()
+    collect_antinodes = set()
 
     dx_first, dy_first = x - x0, y - y0
     dx_second, dy_second = x0 - x, y0 - y
-    for i in range(1, len(grid)):
+    for i in range(0, len(grid)):
         # candidates for antinodes:
-        x_anti_first, y_anit_first = x + (dx_first) * i, y + (dy_first) * i
+        x_anti_first, y_anti_first = x + (dx_first) * i, y + (dy_first) * i
         x_anti_second, y_anti_second = x0 + (dx_second) * i, y0 + (dy_second) * i
 
-        if 0 <= x_anti_first < len(grid[0]) and 0 <= y_anit_first < len(grid):
-            collect_antiondes.add((x_anti_first, y_anit_first))
+        if 0 <= x_anti_first < len(grid[0]) and 0 <= y_anti_first < len(grid):
+            collect_antinodes.add((x_anti_first, y_anti_first))
 
         if 0 <= x_anti_second < len(grid[0]) and 0 <= y_anti_second < len(grid):
-            collect_antiondes.add((x_anti_second, y_anti_second))
+            collect_antinodes.add((x_anti_second, y_anti_second))
 
-    return collect_antiondes
+    return collect_antinodes
 
 
 def get_locations_of_antionodes_for_the_same_frequency(grid, set_of_antennas):
@@ -93,33 +93,14 @@ def count_antinodes(grid):
 
 
 def count_antinodes_part_2(grid):
-    sets_list = [get_locations_of_antionodes_for_the_same_frequency_with_resonant_harmonics(grid, set_of_antenna_location)
-                 for char, set_of_antenna_location in get_all_frequencies_antennas_location(grid).items()]
-    antennas_location = [location for char, location in get_all_frequencies_antennas_location(small_input).items()]
-    return len(set.union(*sets_list).union(set.union(*antennas_location)))
-
-print(count_antinodes_part_2(large_input))
-# 1010 too low
-print("oooooo", get_antinodes_location_with_resonant_harmonics(small_input, 8, 8, 9, 9))
+    sets_list = [
+        get_locations_of_antionodes_for_the_same_frequency_with_resonant_harmonics(grid, set_of_antenna_location)
+        for char, set_of_antenna_location in get_all_frequencies_antennas_location(grid).items()]
+    return len(set.union(*sets_list))
 
 
-def get_all_hash(file_name):
-    grid = read_lines(file_name)
-    all_frequencies = set()
-    for y, engine_line in enumerate(grid):
-        for x, char in enumerate(engine_line):
-            if char.isalnum():
-                all_frequencies.add(char)
-    return all_frequencies
-
-
-antennas_location = [location for char, location in get_all_frequencies_antennas_location(small_input).items()]
-print(set.union(*antennas_location))
-print(get_all_hash("small_input.txt"))
-print([location for char, location in get_all_frequencies_antennas_location(small_input).items()])
 print("First part: ", count_antinodes(large_input))
 print("Second part: ", count_antinodes_part_2(large_input))
-print("Second part: ", count_antinodes_part_2(small_input))
 
 
 # too low: 446
@@ -138,3 +119,6 @@ class TestFunctions(unittest.TestCase):
     def test_count_antinodes(self):
         self.assertEqual(count_antinodes(self.small_input), 14)
         self.assertEqual(count_antinodes(self.large_input), 318)
+
+    def test_count_antinodes_part_2(self):
+        self.assertEqual(count_antinodes_part_2(self.large_input), 1126)
