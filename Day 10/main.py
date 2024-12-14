@@ -94,7 +94,8 @@ def is_valid_path(engine, directions, starting_point, depth):
     x, y = starting_point  # starts on 0
     next_position = [starting_point]
     x0, y0 = next_position[-1]
-    list_of_valid_positions = valid_next_step_positions(engine, directions, x0, y0, starting_point)
+    list_of_valid_positions = valid_next_step_positions(engine, directions, x0, y0, depth)
+    print("list_of_valid_positions", list_of_valid_positions)
     for next_step_positions in list_of_valid_positions:
         next_position.append(next_step_positions)
     # stop condition
@@ -105,6 +106,10 @@ def is_valid_path(engine, directions, starting_point, depth):
         return len(next_position)
     else:
         return is_valid_path(engine, directions, starting_point, depth + 1)
+
+
+def count_valid_paths_from_valis(engine, directions, starting_point):
+    ...
 
 
 print('valid path')
