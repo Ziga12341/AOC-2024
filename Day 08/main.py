@@ -13,8 +13,6 @@ def read_lines(file: str) -> list:
 small_input: list[str] = read_lines(s)
 large_input: list[str] = read_lines(l)
 
-print(read_lines(s))
-
 
 def get_antinodes_location(grid: list[str], x, y, x0, y0) -> set:
     collect_antiondes = set()
@@ -26,10 +24,10 @@ def get_antinodes_location(grid: list[str], x, y, x0, y0) -> set:
     x_anti_first, y_anit_first = x + dx_first, y + dy_first
     x_anti_second, y_anti_second = x0 + dx_second, y0 + dy_second
 
-    if 0 <= x_anti_first <= len(grid[0]) and 0 <= y_anit_first <= len(grid):
+    if 0 <= x_anti_first < len(grid[0]) and 0 <= y_anit_first < len(grid):
         collect_antiondes.add((x_anti_first, y_anit_first))
 
-    if 0 <= x_anti_second <= len(grid[0]) and 0 <= y_anti_second <= len(grid):
+    if 0 <= x_anti_second < len(grid[0]) and 0 <= y_anti_second < len(grid):
         collect_antiondes.add((x_anti_second, y_anti_second))
 
     return collect_antiondes
@@ -51,31 +49,43 @@ def get_all_frequencies_antennas_location(grid):
     all_frequencies = defaultdict(set)
     for y, engine_line in enumerate(grid):
         for x, char in enumerate(engine_line):
-            if char.isdigit() or char.isalpha():
+            if char.isalnum():
                 all_frequencies[char].add((x, y))
     return all_frequencies
 
 
 def count_antinodes(grid):
-    all_antinodes = set()
-    for char, set_of_antenna_location in get_all_frequencies_antennas_location(grid).items():
-        all_antinodes = all_antinodes.union(
-            get_locations_of_antionodes_for_the_same_frequency(grid, set_of_antenna_location))
-    return len(all_antinodes)
+    sets_list = [get_locations_of_antionodes_for_the_same_frequency(grid, set_of_antenna_location)
+                 for char, set_of_antenna_location in get_all_frequencies_antennas_location(grid).items()]
+
+    return len(set.union(*sets_list))
 
 
-print("First part: ", count_antinodes(small_input))
+def get_all_hash(file_name):
+    grid = read_lines(file_name)
+    all_frequencies = set()
+    for y, engine_line in enumerate(grid):
+        for x, char in enumerate(engine_line):
+            if char.isalnum():
+                all_frequencies.add(char)
+    return all_frequencies
+
+
 print("First part: ", count_antinodes(large_input))
 
 
-# 323 - too high
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input: list[str] = read_lines(s)
+        self.large_input = read_lines(l)
 
     def test_get_antinodes_location(self):
         self.assertEqual(get_antinodes_location(self.small_input, 8, 1, 5, 2), {(11, 0), (2, 3)})
         self.assertEqual(get_antinodes_location(self.small_input, 8, 1, 7, 3), {(6, 5)})
+        self.assertEqual(get_antinodes_location(self.small_input, 8, 8, 9, 9), {(10, 10), (7, 7)})
+        self.assertEqual(get_antinodes_location(self.small_input, 8, 8, 9, 10), {(7, 6)})
+        self.assertEqual(get_antinodes_location(self.small_input, 8, 8, 6, 5), {(10, 11), (4, 2)})
 
     def test_count_antinodes(self):
         self.assertEqual(count_antinodes(self.small_input), 14)
+        self.assertEqual(count_antinodes(self.large_input), 318)
