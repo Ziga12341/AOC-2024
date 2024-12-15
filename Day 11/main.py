@@ -16,10 +16,10 @@ large_input: list[int] = read_lines(l)
 
 # 125
 @lru_cache(maxsize=None)
-def blink_stone(stone):
-    list_after_blink = []
+def blink_stone(stone: int):
+    set_after_blink = set()
     if stone == 0:
-        list_after_blink.append(1)
+        set_after_blink.add(1)
     else:
         len_stone = len(str(stone))
         if len_stone % 2 == 0 and stone != 0:
@@ -28,24 +28,25 @@ def blink_stone(stone):
             first_int = int(first)
             second_int = int(second)
             if set(first) == {0}:
-                list_after_blink.append(0)
+                set_after_blink.add(0)
             else:
-                list_after_blink.append(first_int)
+                set_after_blink.add(first_int)
             if set(second) == {0}:
-                list_after_blink.append(0)
+                set_after_blink.add(0)
             else:
-                list_after_blink.append(second_int)
+                set_after_blink.add(second_int)
         else:
-            list_after_blink.append(stone * 2024)
-    return list_after_blink
+            set_after_blink.add(stone * 2024)
+
+    return set_after_blink
 
 
 # 512072, 1, 20, 24, 28676032
 def blink(list_of_arrangement):
-    list_after_blink = []
+    set_after_blink = set()
     for stone in list_of_arrangement:
         if stone == 0:
-            list_after_blink.append(1)
+            set_after_blink.add(1)
         else:
             len_stone = len(str(stone))
             if len_stone % 2 == 0 and stone != 0:
@@ -54,24 +55,25 @@ def blink(list_of_arrangement):
                 first_int = int(first)
                 second_int = int(second)
                 if set(first) == {0}:
-                    list_after_blink.append(0)
+                    set_after_blink.add(0)
                 else:
-                    list_after_blink.append(first_int)
+                    set_after_blink.add(first_int)
                 if set(second) == {0}:
-                    list_after_blink.append(0)
+                    set_after_blink.add(0)
                 else:
-                    list_after_blink.append(second_int)
+                    set_after_blink.add(second_int)
             else:
-                list_after_blink.append(stone * 2024)
+                set_after_blink.add(stone * 2024)
 
-    return list_after_blink
+    return set_after_blink
 
 
 print(blink([125]))
 
 
 # i may need to remember on which step i (result of blink) split something and and save only small list... than on the last tstep iterarte only
-
+# i may have dict with each blink for each iteration of blink in one n ... blink one stone input result and in which n it happend
+# remember in which number of blik did you get some result... save in dict or save number in set
 def next_blink(list_of_stones):
     next_blink_list = []
     arrangement = [blink_stone(stone) for stone in list_of_stones]
@@ -80,6 +82,14 @@ def next_blink(list_of_stones):
     return next_blink_list
 
 
+def next_blink_set(set_of_stones):
+    next_blink_set_stones= set()
+    arrangement = {blink_stone(stone) for stone in set_of_stones}
+    for new_stone in arrangement:
+        next_blink_set_stones.add(new_stone)
+    return next_blink_set_stones
+
+# print(next_blink_set({125, 17}))
 def blink_n_times(first_arrangement, n):
     next_arrangement = first_arrangement
     if n == 0:
@@ -103,6 +113,22 @@ def blink_stone_n_times(first_number, n):
 
 
 # ------------ #
+from collections import defaultdict
+@lru_cache(maxsize=None)
+def blink_sets_stones(first_frozenset, n):
+    # Convert the frozenset back to a mutable set for internal use
+    first_set = first_frozenset
+    dict_of_stones_in_set_by_n = defaultdict(set)
+    dict_of_stones_in_set_by_n[n] = first_set
+    if n == 0:
+        return dict_of_stones_in_set_by_n
+    else:
+        for stone in list(dict_of_stones_in_set_by_n[n]):
+            dict_of_stones_in_set_by_n[n].add(blink_sets_stones(blink_stone(stone), n-1))
+        return dict_of_stones_in_set_by_n
+
+# Use frozenset when calling the function
+print(blink_sets_stones(first_frozenset=frozenset({125, 17}), n=6))
 
 def blink_first_stone_n_times(stone, n):
     next_arrangement = stone
@@ -142,9 +168,9 @@ class TestFunctions(unittest.TestCase):
         self.s = "small_input.txt"
 
     def test_blink(self):
-        self.assertEqual(blink(small_input), [253000, 1, 7])
-        self.assertEqual(blink([253, 0, 2024, 14168]), [512072, 1, 20, 24, 28676032])
-        self.assertEqual(blink([512072, 1, 20, 24, 28676032]), [512, 72, 2024, 2, 0, 2, 4, 2867, 6032])
+        self.assertEqual(blink(small_input), {253000, 1, 7})
+        self.assertEqual(blink([253, 0, 2024, 14168]), {512072, 1, 20, 24, 28676032})
+        self.assertEqual(blink([512072, 1, 20, 24, 28676032]), {512, 72, 2024, 2, 0, 2, 4, 2867, 6032})
 
     def test_count_stones(self):
         self.assertEqual(next_blink(read_lines(self.s)), [253000, 1, 7])
