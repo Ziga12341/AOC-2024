@@ -1,5 +1,6 @@
 import unittest
 from functools import lru_cache
+from collections import defaultdict
 
 s = "small_input.txt"
 l = "input.txt"
@@ -101,19 +102,21 @@ def blink_n_times(first_arrangement, n):
 
 @lru_cache(maxsize=None)
 def blink_stone_n_times(first_number, n):
-    next_arrangement = [first_number]
-    for i in range(len(next_arrangement)):
-        first_blink = blink_stone(next_arrangement[i])
+    first_set = first_number
+    dict_of_stones_in_set_by_n = defaultdict(set)
+    dict_of_stones_in_set_by_n[n].add(first_set)
+    for i in range(len(dict_of_stones_in_set_by_n[n])):
+        first_blink = blink_stone(dict_of_stones_in_set_by_n[n][i])
         if n == 0:
-            return next_arrangement
+            return dict_of_stones_in_set_by_n[n]
         else:
             for blink in first_blink:
-                next_arrangement.append(blink_stone_n_times(blink, n - 1))
-            return next_arrangement
+                dict_of_stones_in_set_by_n[n].add(blink_stone_n_times(blink, n - 1))
+            return dict_of_stones_in_set_by_n[n]
 
+print(blink_stone_n_times(17,6))
 
 # ------------ #
-from collections import defaultdict
 @lru_cache(maxsize=None)
 def blink_sets_stones(first_frozenset, n):
     # Convert the frozenset back to a mutable set for internal use
@@ -128,7 +131,7 @@ def blink_sets_stones(first_frozenset, n):
         return dict_of_stones_in_set_by_n
 
 # Use frozenset when calling the function
-print(blink_sets_stones(first_frozenset=frozenset({125, 17}), n=6))
+# print(blink_sets_stones(first_frozenset=frozenset({125, 17}), n=6))
 
 def blink_first_stone_n_times(stone, n):
     next_arrangement = stone
