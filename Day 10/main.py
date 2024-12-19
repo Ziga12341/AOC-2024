@@ -1,5 +1,18 @@
 import unittest
+from collections import defaultdict
 
+# L - left
+# R - right
+# D - down
+# U - up
+
+
+directions = {
+    "L": (-1, 0),
+    "R": (1, 0),
+    "D": (0, 1),
+    "U": (0, -1),
+}
 s = "small_input.txt"
 l = "input.txt"
 
@@ -19,132 +32,111 @@ def add_star(engine):
     return first_last_line + new_engine + first_last_line
 
 
-# L - left
-# R - right
-# D - down
-# U - up
-
-
-directions = {
-    "L": (-1, 0),
-    "R": (1, 0),
-    "D": (0, 1),
-    "U": (0, -1),
-}
-
-
-def possible_trails_only_first_position(engine):
-    trail_last_position = set()
-    for y, engine_line in enumerate(engine):
+def get_number_from_position(grid, trail_height: int):
+    trail_position = set()
+    for y, engine_line in enumerate(grid):
         for x, char in enumerate(engine_line):
-            if char == "0":
-                trail_last_position.add((x, y))
-    return trail_last_position
+            if char == str(trail_height):
+                trail_position.add((x, y))
+    return trail_position
 
 
-def next_step(directions, x, y, direction):
-    dx, dy = directions[direction]
-    return x + dx, y + dy
+def grid_to_dict_by_trail_heights(grid):
+    all_hiking_trails = defaultdict(set)
+    for i in range(10):
+        all_hiking_trails[i] = get_number_from_position(grid, i)
+    return all_hiking_trails
 
 
-def next_step_valid_position(engine, directions, x, y, direction, current_trail_height: int):
-    x0, y0 = next_step(directions, x, y, direction)
-    if engine[y0][x0] == str(current_trail_height):
-        return x0, y0
+def all_trailhead(grid):
+    initial_dict_with_starting_points = defaultdict(list)
+    for starting_point in grid_to_dict_by_trail_heights(grid)[0]:
+        initial_dict_with_starting_points[0].append([starting_point])
+    return initial_dict_with_starting_points
 
 
-print(possible_trails_only_first_position(add_star(small_input)))
-print(next_step_valid_position(add_star(small_input), directions, 2, 1, "L", 8))
-print(next_step_valid_position(add_star(small_input), directions, 5, 1, "D", 1))
-print(next_step_valid_position(add_star(small_input), directions, 5, 1, "L", 1))
-print(next_step_valid_position(add_star(small_input), directions, 5, 1, "R", 1))
-print("---")
-
-
-def stop_position(engine, directions, x, y, direction):
-    dx, dy = directions[direction]
-    return engine[y + dy][x + dx] == "9"
-
-
-def valid_next_step_positions(engine, directions, x, y, next_trail_height: int):
-    valid_positions = []
+def is_neighbour(x, y, x1, y1, directions):
+    is_any_true = []
     for direction in directions:
-        next_position = next_step_valid_position(engine, directions, x, y, direction, next_trail_height)
-        if next_position:
-            x0, y0 = next_position
-            if engine[y0][x0] == str(int(next_trail_height)):
-                valid_positions.append(next_position)
-    return valid_positions
+        dx, dy = directions[direction]
+        is_any_true.append(x + dx == x1 and y + dy == y1)
+    return any(is_any_true)
 
 
-print(valid_next_step_positions(add_star(small_input), directions, 2, 1, 8))  # two positions
-print(valid_next_step_positions(add_star(small_input), directions, 2, 1, 0))  # one position
-print(valid_next_step_positions(add_star(small_input), directions, 5, 1, 1))  # three positions
+def all_pairs(grid, directions):
+    pairs = defaultdict(list)
+    for i in range(10):
+        for x, y in grid_to_dict_by_trail_heights(grid)[i]:
+            for x1, y1 in grid_to_dict_by_trail_heights(grid)[i + 1]:
+                if is_neighbour(x, y, x1, y1, directions):
+                    pairs[(x, y)].append((x1, y1))
+    return pairs
 
 
-# 89010123
-# 78121874
-# 87430965
-# 96549874
-# 45678903
-# 32019012
-# 01329801
-# 10456732
+def collect_all_pairs(grid, directions):
+    set_of_pairs = set()
+    pairs = all_pairs(grid, directions).items()
+    for current, next_candidates in pairs:
+        for next_candidate in next_candidates:
+            set_of_pairs.add((current, next_candidate))
+    return set_of_pairs
 
-# do not work yet
-def is_valid_path(engine, directions, x,y, depth):
 
-    next_position = []
-    next_position.append((x, y))
-    x0, y0 = next_position[-1]
-    list_of_valid_positions = valid_next_step_positions(engine, directions, x0, y0, depth + 1)
-    next_position.append(list_of_valid_positions)
+def find_one_more_step(tuple_with_previous_steps, pairs):
+    set_with_new_step = set()
+    previous_steps = tuple_with_previous_steps
 
-    # print("list_of_valid_positions", list_of_valid_positions)
+    for tuple_one in previous_steps:
+        last_1 = tuple_one[-1]
 
-    # stop condition
-    # if starting point is 9 - count how
-    if depth == 9:
-        print(next_position)
+        for tuple_two in pairs:
+            first_2 = tuple_two[0]
+            last_2 = tuple_two[-1]
 
-        return next_position
+            if last_1 == first_2:
+                set_with_new_step.add(tuple_one + (last_2,))
+    return set_with_new_step
+
+
+def find_all_paths(set_pairs, pair, n=7):
+    # set_of_tuples = list(set_pairs)
+    set_of_tuples = find_one_more_step(set_pairs, pair)
+
+    if n == 0:
+        return set_of_tuples
     else:
-        # print(next_position)
-        if len(list_of_valid_positions) == 1:
-            x, y = list_of_valid_positions[0]
-            next_position.extend((x, y))
-
-        elif len(list_of_valid_positions) > 1:
-            for next_step_positions in list_of_valid_positions:
-                x1, y1 = next_step_positions
-                next_position.append((x1, y1))
-                x0, y0 = next_position[-1]
-                is_valid_path(engine, directions, x0, y0, depth+1)
-            return next_position
-            # return is_valid_path(engine, directions, next_position[-1], depth+1)
-        # return is_valid_path(engine, directions, starting_point, depth + 1)
+        set_pairs = set_of_tuples
+        return find_all_paths(set_pairs, pair, n - 1)
 
 
-def count_valid_paths_from_valis(engine, directions, starting_point):
-    ...
+# count last one which should be unique...last one should be unique
+
+def count_only_which_finished_in_nine_once(grid_input, directions):
+    counter = 0
+    visited = set()
+    for path in find_all_paths(collect_all_pairs(grid_input, directions), collect_all_pairs(grid_input, directions)):
+        # if path[0] in grid_to_dict_by_trail_heights(grid_input)[0] and path[-1] in \
+        #         grid_to_dict_by_trail_heights(grid_input)[9]:
+        if (path[0], path[-1]) not in visited:
+            counter += 1
+            visited.add((path[0], path[-1]))
+    return counter
 
 
-print('valid path')
-is_valid_path(add_star(small_input), directions, 5, 1, depth=0)
-print('end')
+print("Part 1: ", count_only_which_finished_in_nine_once(large_input, directions))
+print("Part 2: ",
+      len(find_all_paths(collect_all_pairs(large_input, directions), collect_all_pairs(large_input, directions))))
 
 
-def count_valid_paths(engine, directions):
-    starting_points = possible_trails_only_first_position(engine)
-    return sum(is_valid_path(engine, directions, starting_point, depth=0) for starting_point in starting_points)
+class TestFunctions(unittest.TestCase):
+    def setUp(self):
+        self.small_input: list[str] = read_lines(s)
+        self.large_input: list[str] = read_lines(l)
 
+    def test_count_valid_paths(self):
+        self.assertEqual(count_only_which_finished_in_nine_once(self.small_input, directions), 36)
+        self.assertEqual(
+            len(find_all_paths(collect_all_pairs(self.small_input, directions), collect_all_pairs(self.small_input, directions))),
+            81)
 
-# print("Part 1: ", count_valid_paths(add_star(small_input), directions))
-
-#
-# class TestFunctions(unittest.TestCase):
-#     def setUp(self):
-#         self.small_input: list[str] = read_lines(s)
-#
-#     def test_count_valid_paths(self):
-#         self.assertEqual(count_valid_paths(add_star(self.small_input), directions), 36)
+        # self.assertEqual(count_only_which_finished_in_nine_once(self.large_input, directions), 789)
