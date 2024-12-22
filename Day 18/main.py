@@ -75,12 +75,11 @@ def flood_fill_levels(grid, start, stop, directions):
                 position_levels[neighbour] = position_levels[(x, y)] + 1
 
 
-print(flood_fill_levels(add_byte_position_to_grid_with_wall(7, s, 12), (0, 0), (6, 6), directions))
-print(flood_fill_levels(add_byte_position_to_grid_with_wall(7, s, 12), (0, 0), (6, 6), directions)[(6, 6)])
-
-print(flood_fill_levels(add_byte_position_to_grid_with_wall(71, l, 1024), (0, 0), (70, 70), directions))
-print(flood_fill_levels(add_byte_position_to_grid_with_wall(71, l, 1024), (0, 0), (70, 70), directions)[(70, 70)])
-
+print("Part 1: ",
+      flood_fill_levels(add_byte_position_to_grid_with_wall(71, l, 1024), (0, 0), (70, 70), directions)[(70, 70)])
+print("Part 2: ", flood_fill_levels(add_byte_position_to_grid_with_wall(71, l, 2960), (0, 0), (70, 70), directions))
+print("Part 2: ", flood_fill_levels(add_byte_position_to_grid_with_wall(71, l, 2961), (0, 0), (70, 70), directions))
+# the right answer for part 2 : 61,50
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
