@@ -20,14 +20,8 @@ def rearrange_schematics(schematics):
     return columns_to_rows
 
 
-print(rearrange_schematics(test))
-
-
 def count_hashes(schematics):
     return [row.count("#") for row in schematics]
-
-
-print(count_hashes(rearrange_schematics(test)))
 
 
 def read_lines(file_name: str) -> list:
@@ -45,11 +39,6 @@ def read_lines(file_name: str) -> list:
         return all_schematics
 
 
-small_input: list[str] = read_lines(s)
-large_input: list[str] = read_lines(l)
-print(small_input)
-
-
 def get_pin_heights_for_keys_and_locks(file_name):
     keys = []
     locks = []
@@ -63,8 +52,33 @@ def get_pin_heights_for_keys_and_locks(file_name):
 
     return keys, locks
 
-print(get_pin_heights_for_keys_and_locks(s))
+
+def loop_all_locks_with_all_keys(file_name):
+    counter = 0
+    for keys in get_pin_heights_for_keys_and_locks(file_name)[0]:
+        for locks in get_pin_heights_for_keys_and_locks(file_name)[1]:
+            if keys != locks:
+                # for each index check if sum less or equal 5
+                accumulator = []
+                for i in range(len(keys)):
+                    if keys[i] + locks[i] <= 5:
+                        accumulator.append(True)
+                    else:
+                        accumulator.append(False)
+                if all(accumulator):
+                    counter += 1
+    return counter
+
+
+print("Part 1 :", loop_all_locks_with_all_keys(l))
+
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input: list[str] = read_lines(s)
+        self.s = "small_input.txt"
+        self.l = "input.txt"
+
+    def test_semple_input(self):
+        self.assertEqual(loop_all_locks_with_all_keys(self.s), 3)
+        self.assertEqual(loop_all_locks_with_all_keys(self.l), 3320)
