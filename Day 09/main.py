@@ -11,14 +11,10 @@ def get_disk_map(file_path: str) -> str:
 
 small_input: str = get_disk_map(s)
 large_input: str = get_disk_map(l)
-print(small_input[::2])
 
 
 def get_reversed_number(file_path):
     return [(i, int(element)) for i, element in enumerate(get_disk_map(file_path)[::2])][::-1]
-
-
-print(get_reversed_number(s))
 
 
 def id_assigment_2(file_path: str):
@@ -35,9 +31,6 @@ def id_assigment_2(file_path: str):
             rearranged_int.extend(int(number) * [-1])
 
     return rearranged_int
-
-
-print(id_assigment_2("small_input.txt"))
 
 
 # move one element
@@ -61,9 +54,6 @@ def replace_dot_with_last_element(file_path: str):
     return new_arranged_disk_map
 
 
-print(replace_dot_with_last_element(s))
-
-
 def get_dot_index(arranged_disk):
     dot_indexes = []
     segment_of_dots = []
@@ -76,108 +66,41 @@ def get_dot_index(arranged_disk):
     return dot_indexes
 
 
-print(get_dot_index(
-    [0, 0, -1, -1, -1, 1, 1, 1, -1, -1, -1, 2, -1, -1, -1, 3, 3, 3, -1, 4, 4, -1, 5, 5, 5, 5, -1, 6, 6, 6, 6, -1, 7, 7,
-     7, -1, 8, 8, 8, 8, 9, 9]
-))
-
-
-# def arrange_disk_move_whole_file(file_path):
-#     # follow_index = float('inf')
-#     follow_index = 2 ** 1000
-#     initial_assigment = id_assigment_2(file_path)
-#     numbers_to_replace = get_reversed_number(file_path)
-#     while numbers_to_replace:
-#         get_indexes = get_dot_index(initial_assigment[:follow_index])
-#         number, times = numbers_to_replace.pop(0)
-#         for one_group_of_dots in get_indexes:
-#             if len(one_group_of_dots) >= times:
-#                 follow_index = initial_assigment.index(number)
-#                 index_to_replace_with_number = one_group_of_dots[:times]
-#                 for dot_index in index_to_replace_with_number:
-#                     initial_assigment[dot_index] = number
-#                     # l[:3] + [9 if num == 5 else num for num in l[3:]]
-#                 initial_assigment = initial_assigment[:index_to_replace_with_number[-1] + 1] + [
-#                     -1 if nummber_in_initial_assigment == number else nummber_in_initial_assigment for
-#                     nummber_in_initial_assigment in initial_assigment[index_to_replace_with_number[-1] + 1:]]
-#                 break
 #
-#     return initial_assigment
-
-
 def arrange_disk_move_whole_file(file_path):
-    initial_assignment = id_assigment_2(file_path)
-    disk_length = len(initial_assignment)
-
-    # Build a dict of files with their positions and sizes
-    files = {}
-    for idx, file_id in enumerate(initial_assignment):
-        if file_id != -1:
-            if file_id not in files:
-                files[file_id] = {
-                    'positions': []
-                }
-            files[file_id]['positions'].append(idx)
-
-    # Store the size of each file
-    for file_id in files:
-        files[file_id]['size'] = len(files[file_id]['positions'])
-
-    # Process files in decreasing order of file IDs
-    for file_id in sorted(files.keys(), reverse=True):
-        file_positions = files[file_id]['positions']
-        file_size = files[file_id]['size']
-        leftmost_pos = min(file_positions)
-
-        # Identify free space spans to the left of the file's leftmost position
-        # Do this by scanning from the start up to the leftmost position
-        free_spans = []
-        in_span = False
-        span_start = None
-        for idx in range(leftmost_pos):
-            if initial_assignment[idx] == -1:
-                if not in_span:
-                    # Start of a new free span
-                    in_span = True
-                    span_start = idx
-            else:
-                if in_span:
-                    # End of a free span
-                    in_span = False
-                    span_end = idx - 1
-                    free_spans.append((span_start, span_end))
-        if in_span:
-            # Close any open span at the end
-            span_end = leftmost_pos - 1
-            free_spans.append((span_start, span_end))
-
-        # Attempt to move the file to the leftmost suitable free span
+    follow_index = 2 ** 1000  # A large number to start with
+    initial_assigment = id_assigment_2(file_path)
+    numbers_to_replace = get_reversed_number(file_path)
+    while numbers_to_replace:
+        get_indexes = get_dot_index(initial_assigment[:follow_index])
+        number, times = numbers_to_replace.pop(0)
         moved = False
-        for span_start, span_end in free_spans:
-            span_size = span_end - span_start + 1
-            if span_size >= file_size:
-                # Move the file to this free span
-                # Update the initial_assignment
-                # First, mark the old positions as free
-                for pos in file_positions:
-                    initial_assignment[pos] = -1
-                # Place the file in the new positions
-                new_positions = list(range(span_start, span_start + file_size))
-                for pos in new_positions:
-                    initial_assignment[pos] = file_id
-                # Update the file's positions
-                files[file_id]['positions'] = new_positions
+        for one_group_of_dots in get_indexes:
+            if len(one_group_of_dots) >= times:
+                # Update follow_index to the leftmost position of the current file
+                follow_index = min(i for i, x in enumerate(initial_assigment) if x == number)
+                index_to_replace_with_number = one_group_of_dots[:times]
+                # Move the file to the new positions
+                for dot_index in index_to_replace_with_number:
+                    initial_assigment[dot_index] = number
+                # Remove all old occurrences of the file ID except at the new positions
+                for idx in range(len(initial_assigment)):
+                    if initial_assigment[idx] == number and idx not in index_to_replace_with_number:
+                        initial_assigment[idx] = -1
                 moved = True
                 break  # Stop after moving the file
-        # If not moved, the file stays in place
+        if not moved:
+            # If the file didn't move, update follow_index to the leftmost position of the file
+            indices_of_number = [idx for idx, val in enumerate(initial_assigment) if val == number]
+            if indices_of_number:
+                follow_index = min(indices_of_number)
+            else:
+                # File doesn't exist in initial_assigment, set follow_index to 0
+                follow_index = 0
+    return initial_assigment
 
-    return initial_assignment
 
-
-
-# print("id_assigment_2(file_path)", id_assigment_2(l))
-# print(arrange_disk_move_whole_file(l))
-
+#
 def filesystem_checksum(file_path):
     sum_number_plus_index = 0
     arranged_disk_map = replace_dot_with_last_element(file_path)
@@ -197,8 +120,10 @@ def filesystem_checksum_part_2(file_path):
 
 
 #
-# print("First_part: ", filesystem_checksum(l))
+print("First_part: ", filesystem_checksum(l))
 print("Second_part: ", filesystem_checksum_part_2(l))
+
+
 # part 2 6423378639280 too high
 # part 2 9688004123175 too high
 
@@ -212,7 +137,8 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(id_assigment_2(self.s),
                          [0, 0, -1, -1, -1, 1, 1, 1, -1, -1, -1, 2, -1, -1, -1, 3, 3, 3, -1, 4, 4, -1, 5, 5, 5, 5, -1,
                           6, 6, 6, 6, -1, 7, 7, 7, -1, 8, 8, 8, 8, 9, 9])
-        self.assertEqual(id_assigment_2("new.txt"), [0, -1, -1, -1, 1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, 3, 3, 3, 3, 3])
+        self.assertEqual(id_assigment_2("new.txt"),
+                         [0, -1, -1, -1, 1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, 3, 3, 3, 3, 3])
 
     def test_arrange_disk_map(self):
         self.assertEqual(replace_dot_with_last_element(self.s),
