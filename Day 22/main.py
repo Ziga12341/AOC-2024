@@ -53,15 +53,42 @@ def loop_next_numbers_n_times(initial_number: int, n: int):
     return initial_number
 
 
+print(loop_next_numbers_n_times(123, 10))
+
+
 def sum_2000th_secret_number(file_name: str) -> int:
     counter = 0
     for number in read_lines(file_name):
         counter += loop_next_numbers_n_times(number, 2000)
     return counter
 
+from collections import defaultdict
+def get_changes_in_prices(initial_number: int):
+    
+    tuple_changes_by_4 = defaultdict(int)
+    current_loop = 1
+    previous_value = int(str(initial_number)[-1])
+    four_changes_with_price = []
+    while current_loop <= 2000:
+        if len(four_changes_with_price) == 4:
+            if not tuple_changes_by_4[tuple(four_changes_with_price)] or tuple_changes_by_4[tuple(four_changes_with_price)] < previous_value:
 
-print("Part one: ", sum_2000th_secret_number(l))
+                tuple_changes_by_4[tuple(four_changes_with_price)] = previous_value
+            four_changes_with_price = four_changes_with_price[1:]
+        else:
+            initial_number = get_next_secret_number(initial_number)
+            initial_last_number = int(str(initial_number)[-1])
+            change_in_price = initial_last_number - previous_value
+            four_changes_with_price.append(change_in_price)
+            previous_value = initial_last_number
+            current_loop += 1
+    return tuple_changes_by_4
 
+
+
+# print("Part one: ", sum_2000th_secret_number(l))
+
+print(get_changes_in_prices(123))
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
