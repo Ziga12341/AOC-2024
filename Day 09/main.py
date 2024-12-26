@@ -4,7 +4,6 @@ s = "small_input.txt"
 l = "input.txt"
 
 
-
 def get_disk_map(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as file_path:
         return [line.strip() for line in file_path][0]
@@ -14,53 +13,26 @@ small_input: str = get_disk_map(s)
 large_input: str = get_disk_map(l)
 
 
-def id_assigment(file_path: str):
-    disk_map = get_disk_map(file_path)
-    starting_number = 0
-    rearranged_string = ""
-    list_of_numbers = []
-    for i, number in enumerate(disk_map):
-        if i % 2 == 0:
-            # hom many ids need to add
-            rearranged_string += str(starting_number) * int(number)
-            add_how_many_numbers = [starting_number] * int(number)
-            list_of_numbers.extend(add_how_many_numbers)
-            starting_number += 1
-        else:
-            # free spaces info
-            rearranged_string += int(number) * "."
-            add_dots = int(number) * [-1]
-
-            list_of_numbers.extend(add_dots)
-    return rearranged_string, list_of_numbers
-
-
 def id_assigment_2(file_path: str):
     disk_map = get_disk_map(file_path)
     starting_number = 0
     rearranged_int = []
-    list_of_numbers = []
     for i, number in enumerate(disk_map):
         if i % 2 == 0:
             # hom many ids need to add
             rearranged_int.extend([starting_number] * int(number))
-            add_how_many_numbers = [starting_number] * int(number)
-            list_of_numbers.extend(add_how_many_numbers)
             starting_number += 1
         else:
             # free spaces info
             rearranged_int.extend(int(number) * [-1])
-            add_dots = int(number) * [-1]
 
-            list_of_numbers.extend(add_dots)
-    return rearranged_int, list_of_numbers
-
+    return rearranged_int
+print(id_assigment_2("small_input.txt"))
 
 # move one element
 # 00...111...2...333.44.5555.6666.777.888899 - > 0099811188827773336446555566..............
 def replace_dot_with_last_element(file_path: str):
-    arranged_disk_map: list[int] = id_assigment_2(file_path)[0]
-    dots_in_arranged_disc = len([dot for dot in arranged_disk_map if dot == -1])
+    arranged_disk_map: list[int] = id_assigment_2(file_path)
     new_arranged_disk_map = []
     right_index = len(arranged_disk_map) - 1
     for i, number in enumerate(arranged_disk_map):
@@ -97,7 +69,7 @@ class TestFunctions(unittest.TestCase):
         self.l = "input.txt"
 
     def test_id_assigment_2(self):
-        self.assertEqual(id_assigment_2(self.s)[0],
+        self.assertEqual(id_assigment_2(self.s),
                          [0, 0, -1, -1, -1, 1, 1, 1, -1, -1, -1, 2, -1, -1, -1, 3, 3, 3, -1, 4, 4, -1, 5, 5, 5, 5, -1,
                           6, 6, 6, 6, -1, 7, 7, 7, -1, 8, 8, 8, 8, 9, 9])
 
