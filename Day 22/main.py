@@ -62,23 +62,21 @@ def sum_2000th_secret_number(file_name: str) -> int:
 
 
 def determine_sequence_all_result_for_one_secret_number(initial_secret_number):
-    sequence_four_changes_and_value = defaultdict(int)
-    current_loop = 1
+    sequence_four_changes_and_value = {}
+    current_loop = 0
     previous_value = int(str(initial_secret_number)[-1])
     four_changes_with_price = []
-    while current_loop <= 2001:
-        if len(four_changes_with_price) == 4:
-            if not sequence_four_changes_and_value[tuple(four_changes_with_price)] or sequence_four_changes_and_value[
-                tuple(four_changes_with_price)] < previous_value:
-                sequence_four_changes_and_value[tuple(four_changes_with_price)] = previous_value
-            four_changes_with_price = four_changes_with_price[1:]
-        else:
-            initial_secret_number = get_next_secret_number(initial_secret_number)
-            initial_last_number = int(str(initial_secret_number)[-1])
-            change_in_price = initial_last_number - previous_value
-            four_changes_with_price.append(change_in_price)
-            previous_value = initial_last_number
-            current_loop += 1
+    while current_loop < 2000:
+        initial_secret_number = get_next_secret_number(initial_secret_number)
+        current_value = int(str(initial_secret_number)[-1])
+        change_in_price = current_value - previous_value
+        four_changes_with_price.append(change_in_price)
+        if len(four_changes_with_price) >= 4:
+            sequence = tuple(four_changes_with_price[-4:])
+            if sequence not in sequence_four_changes_and_value:
+                sequence_four_changes_and_value[sequence] = current_value
+        previous_value = current_value
+        current_loop += 1
     return sequence_four_changes_and_value
 # print(determine_sequence_all_result_for_one_secret_number(123)) # it works
 
@@ -97,82 +95,22 @@ def get_sum_from_best_sequence(file_name):
     return sum_values_for_each_sequence(file_name)[-1][0]
 
 # print(sum_values_for_each_sequence("test_first_one_part_2.txt"))
-# print(sum_values_for_each_sequence(l))
+print(get_sum_from_best_sequence(l))
 
 
 
 
 
-def get_changes_in_prices(file_name: str):
-    main_dict = defaultdict(list)
-    for initial_number in read_lines(file_name):
-        tuple_changes_by_4 = defaultdict(int)
-        current_loop = 1
-        previous_value = int(str(initial_number)[-1])
-        four_changes_with_price = []
-        while current_loop <= 2001:
-            if len(four_changes_with_price) == 4:
-                if not tuple_changes_by_4[tuple(four_changes_with_price)] or tuple_changes_by_4[
-                    tuple(four_changes_with_price)] < previous_value:
-                    tuple_changes_by_4[tuple(four_changes_with_price)] = previous_value
-                four_changes_with_price = four_changes_with_price[1:]
-            else:
-                initial_number = get_next_secret_number(initial_number)
-                initial_last_number = int(str(initial_number)[-1])
-                change_in_price = initial_last_number - previous_value
-                four_changes_with_price.append(change_in_price)
-                previous_value = initial_last_number
-                current_loop += 1
-        for tuple_with_four_changes_with_price, current_value in tuple_changes_by_4.items():
-            main_dict[tuple_with_four_changes_with_price].append(current_value)
-    # Compute sums and store them in a dictionary
-    sum_dict = {}
-    for key in main_dict:
-        total = 0
-        for num in main_dict[key]:
-            total += num
-        sum_dict[key] = total
-
-    # Sort the sum_dict by values in descending order
-    sorted_by_sum_desc = {}
-    for key in sorted(sum_dict, key=sum_dict.get, reverse=True):
-        sorted_by_sum_desc[key] = sum_dict[key]
-
-    return sorted_by_sum_desc
 
 
 # print("Part one: ", sum_2000th_secret_number(l))
 # print("Part two: ",get_changes_in_prices("small_input_part_2.txt"))
-# print("Part two: ",get_changes_in_prices(l))
 # part two 2431 too high
 # part two 2259 too low
 # 2430 too high
 # 2440 not right
 # 2259 not
 # check for this one! = (2, -1, -1, 2)
-def get_particular(sequence, file_name):
-    main_list = []
-    for initial_number in read_lines(file_name):
-        tuple_changes_by_4 = []
-        current_loop = 1
-        previous_value = int(str(initial_number)[-1])
-        four_changes_with_price = []
-        while current_loop <= 2001:
-            initial_number = get_next_secret_number(initial_number)
-            initial_last_number = int(str(initial_number)[-1])
-            change_in_price = initial_last_number - previous_value
-            four_changes_with_price.append(change_in_price)
-            if len(four_changes_with_price) > 4:
-                four_changes_with_price.pop(0)  # Remove the oldest change
-            if len(four_changes_with_price) == 4 and tuple(four_changes_with_price) == sequence:
-                tuple_changes_by_4.append(previous_value)
-            previous_value = initial_last_number
-            current_loop += 1
-        if tuple_changes_by_4:
-            main_list.append(tuple_changes_by_4)
-    return main_list
-
-print(get_particular((-1, 0, -1, 8), "test_first_one_part_2.txt"))
 
 # print(get_particular((2, -1, -1, 2), l))  # the annswer for this one: 1610
 
