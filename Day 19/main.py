@@ -25,7 +25,34 @@ small_input = read_lines(s)
 large_input = read_lines(l)
 print(small_input)
 
+def design_possible(design:str, towel_patterns:list) -> bool:
+    pattern_not_in_design = []
+    for pattern in towel_patterns:
+        if pattern not in design:
+            pattern_not_in_design.append(True)
+        else:
+            pattern_not_in_design.append(False)
+    # stop condition if there cannot continue with get smaller design
+    if all(pattern_not_in_design):
+        return False
+    else:
+        for pattern in towel_patterns:
+            if pattern == design:
+                return True
+            elif pattern in design:
+                pattern_first_index = design.find(pattern)
+                pattern_len = len(pattern)
+                design_possible(design[:pattern_first_index] + design[pattern_first_index + pattern_len:], towel_patterns)
+
+print(design_possible("brwrr", read_lines(s)[0]))
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input = read_lines(s)
+        self.towel_patterns_small = read_lines(s)[0]
+        self.towel_patterns_large = read_lines(l)[0]
+
+    def test_possible_designs(self):
+        self.assertTrue(design_possible("brwrr", self.towel_patterns_small))
+        self.assertFalse(design_possible("ubwu", self.towel_patterns_small))
+        self.assertFalse(design_possible("bbrgwb", self.towel_patterns_small))
