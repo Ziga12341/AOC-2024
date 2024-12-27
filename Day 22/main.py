@@ -61,6 +61,7 @@ def sum_2000th_secret_number(file_name: str) -> int:
     return counter
 
 
+# for one secret number get dict of all sequences by changes and (last) value
 def determine_sequence_all_result_for_one_secret_number(initial_secret_number):
     sequence_four_changes_and_value = {}
     current_loop = 0
@@ -78,50 +79,32 @@ def determine_sequence_all_result_for_one_secret_number(initial_secret_number):
         previous_value = current_value
         current_loop += 1
     return sequence_four_changes_and_value
-# print(determine_sequence_all_result_for_one_secret_number(123)) # it works
 
+
+# for all initial secret numbers collect all sequences by four and append values from different secret numbers to this sequences
 def collect_sequences_for_all_initial_secret_numbers(file_name):
     all_sequences_together = defaultdict(list)
     for initial_secret_number in read_lines(file_name):
         for key, value in determine_sequence_all_result_for_one_secret_number(initial_secret_number).items():
             all_sequences_together[key].append(value)
     return all_sequences_together
-# print(collect_sequences_for_all_initial_secret_numbers("small_input_part_2.txt"))
 
+
+# just sum what values are in each sequence (sum list of values per sequence)
 def sum_values_for_each_sequence(file_name):
-    return sorted([(sum(value), key) for key, value in collect_sequences_for_all_initial_secret_numbers(file_name).items()])
+    return sorted(
+        [(sum(value), key) for key, value in collect_sequences_for_all_initial_secret_numbers(file_name).items()])
 
+
+# get sum of values for best sequence
 def get_sum_from_best_sequence(file_name):
     return sum_values_for_each_sequence(file_name)[-1][0]
 
-# print(sum_values_for_each_sequence("test_first_one_part_2.txt"))
-print(get_sum_from_best_sequence(l))
+
+print("Part one: ", sum_2000th_secret_number(l))
+print("Part two: ", get_sum_from_best_sequence(l))
 
 
-
-
-
-
-
-# print("Part one: ", sum_2000th_secret_number(l))
-# print("Part two: ",get_changes_in_prices("small_input_part_2.txt"))
-# part two 2431 too high
-# part two 2259 too low
-# 2430 too high
-# 2440 not right
-# 2259 not
-# check for this one! = (2, -1, -1, 2)
-
-# print(get_particular((2, -1, -1, 2), l))  # the annswer for this one: 1610
-
-
-# print(get_changes_in_prices("small_input_part_2.txt")) # correct: first is (-2, 1, -1, 3): [7, 7, 9]
-
-# i can try to loop over all sequences
-
-
-# print(collect_all("small_input_part_2.txt"))
-# print(collect_all(l)) # it takes ages
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input: list[str] = read_lines(s)
