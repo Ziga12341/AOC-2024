@@ -1,4 +1,5 @@
 import unittest
+from collections import defaultdict
 
 s = "small_input.txt"
 l = "input.txt"
@@ -60,7 +61,46 @@ def sum_2000th_secret_number(file_name: str) -> int:
     return counter
 
 
-from collections import defaultdict
+def determine_sequence_all_result_for_one_secret_number(initial_secret_number):
+    sequence_four_changes_and_value = defaultdict(int)
+    current_loop = 1
+    previous_value = int(str(initial_secret_number)[-1])
+    four_changes_with_price = []
+    while current_loop <= 2001:
+        if len(four_changes_with_price) == 4:
+            if not sequence_four_changes_and_value[tuple(four_changes_with_price)] or sequence_four_changes_and_value[
+                tuple(four_changes_with_price)] < previous_value:
+                sequence_four_changes_and_value[tuple(four_changes_with_price)] = previous_value
+            four_changes_with_price = four_changes_with_price[1:]
+        else:
+            initial_secret_number = get_next_secret_number(initial_secret_number)
+            initial_last_number = int(str(initial_secret_number)[-1])
+            change_in_price = initial_last_number - previous_value
+            four_changes_with_price.append(change_in_price)
+            previous_value = initial_last_number
+            current_loop += 1
+    return sequence_four_changes_and_value
+# print(determine_sequence_all_result_for_one_secret_number(123)) # it works
+
+def collect_sequences_for_all_initial_secret_numbers(file_name):
+    all_sequences_together = defaultdict(list)
+    for initial_secret_number in read_lines(file_name):
+        for key, value in determine_sequence_all_result_for_one_secret_number(initial_secret_number).items():
+            all_sequences_together[key].append(value)
+    return all_sequences_together
+# print(collect_sequences_for_all_initial_secret_numbers("small_input_part_2.txt"))
+
+def sum_values_for_each_sequence(file_name):
+    return sorted([(sum(value), key) for key, value in collect_sequences_for_all_initial_secret_numbers(file_name).items()])
+
+def get_sum_from_best_sequence(file_name):
+    return sum_values_for_each_sequence(file_name)[-1][0]
+
+# print(sum_values_for_each_sequence("test_first_one_part_2.txt"))
+# print(sum_values_for_each_sequence(l))
+
+
+
 
 
 def get_changes_in_prices(file_name: str):
@@ -70,7 +110,7 @@ def get_changes_in_prices(file_name: str):
         current_loop = 1
         previous_value = int(str(initial_number)[-1])
         four_changes_with_price = []
-        while current_loop <= 2000:
+        while current_loop <= 2001:
             if len(four_changes_with_price) == 4:
                 if not tuple_changes_by_4[tuple(four_changes_with_price)] or tuple_changes_by_4[
                     tuple(four_changes_with_price)] < previous_value:
@@ -107,8 +147,8 @@ def get_changes_in_prices(file_name: str):
 # part two 2431 too high
 # part two 2259 too low
 # 2430 too high
-
-
+# 2440 not right
+# 2259 not
 # check for this one! = (2, -1, -1, 2)
 def get_particular(sequence, file_name):
     main_list = []
@@ -117,7 +157,7 @@ def get_particular(sequence, file_name):
         current_loop = 1
         previous_value = int(str(initial_number)[-1])
         four_changes_with_price = []
-        while current_loop <= 2000:
+        while current_loop <= 2001:
             initial_number = get_next_secret_number(initial_number)
             initial_last_number = int(str(initial_number)[-1])
             change_in_price = initial_last_number - previous_value
@@ -129,9 +169,10 @@ def get_particular(sequence, file_name):
             previous_value = initial_last_number
             current_loop += 1
         if tuple_changes_by_4:
-            main_list.append(max(tuple_changes_by_4))
-    return sum(main_list)
+            main_list.append(tuple_changes_by_4)
+    return main_list
 
+print(get_particular((-1, 0, -1, 8), "test_first_one_part_2.txt"))
 
 # print(get_particular((2, -1, -1, 2), l))  # the annswer for this one: 1610
 
@@ -140,24 +181,9 @@ def get_particular(sequence, file_name):
 
 # i can try to loop over all sequences
 
-def generate_all_sequences():
-    sequences = set()
-    for a in range(-9, 10):
-        for b in range(-9, 10):
-            for c in range(-9, 10):
-                for d in range(-9, 10):
-                    sequences.add((a, b, c, d))
-    return sequences
 
-def collect_all(file_name):
-    all_of_sequences = []
-    for sequence in generate_all_sequences():
-        all_of_sequences.append((get_particular(sequence, file_name), sequence))
-
-    return sorted(all_of_sequences)
-
-print(collect_all("small_input_part_2.txt"))
-# print(collect_all(l))
+# print(collect_all("small_input_part_2.txt"))
+# print(collect_all(l)) # it takes ages
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input: list[str] = read_lines(s)
@@ -167,3 +193,10 @@ class TestFunctions(unittest.TestCase):
     def test_sum_2000(self):
         self.assertEqual(sum_2000th_secret_number(self.s), 37327623)
         self.assertEqual(sum_2000th_secret_number(self.l), 19877757850)
+        self.assertEqual(sum_2000th_secret_number("test_last_one_part_2.txt"), 18183557)
+        self.assertEqual(sum_2000th_secret_number("test_first_one_part_2.txt"), 8876699)
+
+    def test_final_sum_part_2(self):
+        self.assertEqual(get_sum_from_best_sequence("test_last_one_part_2.txt"), 27)
+        self.assertEqual(get_sum_from_best_sequence("test_first_one_part_2.txt"), 27)
+        self.assertEqual(get_sum_from_best_sequence("small_input_part_2.txt"), 23)
