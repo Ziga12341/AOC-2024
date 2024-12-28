@@ -44,44 +44,44 @@ print(small_input)
 #                 pattern_first_index = design.find(pattern)
 #                 pattern_len = len(pattern)
 #                 design_possible(design[:pattern_first_index] + design[pattern_first_index + pattern_len:], towel_patterns)
-def design_possible(design: str, towel_patterns: list) -> bool:
-    new_parts_of_design_candidates = [design]
-    pattern_not_in_design = []
-
-    # stop condition if there smaller design in candidates
-    if not new_parts_of_design_candidates:
-        return False
-    else:
-        for pattern in towel_patterns:
-            if pattern in new_parts_of_design_candidates:
-                return True
-            candidate = new_parts_of_design_candidates.pop(0)
-            pattern_first_index = candidate.find(pattern)
-            pattern_len = len(pattern)
-            new_parts_of_design_candidates.extend(
-                candidate[:pattern_first_index] + candidate[pattern_first_index + pattern_len:])
-
-        return design_possible(new_parts_of_design_candidates, towel_patterns)
-
-
-def design_possible(design: list, towel_patterns: list) -> bool:
-    new_parts_of_design_candidates = []
-
-    # stop condition if there smaller design in candidates
-    if not new_parts_of_design_candidates:
-        return False
-    else:
-        for pattern in towel_patterns:
-            if pattern in new_parts_of_design_candidates:
-                return True
-            candidate = new_parts_of_design_candidates.pop(0)
-            pattern_first_index = candidate.find(pattern)
-            pattern_len = len(pattern)
-            new_parts_of_design_candidates.extend(
-                candidate[:pattern_first_index] + candidate[pattern_first_index + pattern_len:])
-
-        return design_possible(new_parts_of_design_candidates, towel_patterns)
-
+# def design_possible(design: str, towel_patterns: list) -> bool:
+#     new_parts_of_design_candidates = [design]
+#     pattern_not_in_design = []
+#
+#     # stop condition if there smaller design in candidates
+#     if not new_parts_of_design_candidates:
+#         return False
+#     else:
+#         for pattern in towel_patterns:
+#             if pattern in new_parts_of_design_candidates:
+#                 return True
+#             candidate = new_parts_of_design_candidates.pop(0)
+#             pattern_first_index = candidate.find(pattern)
+#             pattern_len = len(pattern)
+#             new_parts_of_design_candidates.extend(
+#                 candidate[:pattern_first_index] + candidate[pattern_first_index + pattern_len:])
+#
+#         return design_possible(new_parts_of_design_candidates, towel_patterns)
+#
+#
+# def design_possible(design: list, towel_patterns: list) -> bool:
+#     new_parts_of_design_candidates = []
+#
+#     # stop condition if there smaller design in candidates
+#     if not new_parts_of_design_candidates:
+#         return False
+#     else:
+#         for pattern in towel_patterns:
+#             if pattern in new_parts_of_design_candidates:
+#                 return True
+#             candidate = new_parts_of_design_candidates.pop(0)
+#             pattern_first_index = candidate.find(pattern)
+#             pattern_len = len(pattern)
+#             new_parts_of_design_candidates.extend(
+#                 candidate[:pattern_first_index] + candidate[pattern_first_index + pattern_len:])
+#
+#         return design_possible(new_parts_of_design_candidates, towel_patterns)
+#
 
 def design_possible(design_candidates: list, towel_patterns: list) -> bool:
     new_design_candidates = []
@@ -99,8 +99,8 @@ def design_possible(design_candidates: list, towel_patterns: list) -> bool:
     # in one line
     # towel_patterns_in_design_candidates = [True if towel_pattern in design_candidate else False for design_candidate in design_candidates for towel_pattern in towel_patterns]
 
-    # all(): at least one element is true - return True
-    if not all(towel_patterns_in_design_candidates):
+    # any(): are there any True in it
+    if not any(towel_patterns_in_design_candidates):
         return False
     # make a problem smaller in else - remove towel pattern form design string and append it to another "loop"
     else:
@@ -117,16 +117,17 @@ def design_possible(design_candidates: list, towel_patterns: list) -> bool:
         return design_possible(new_design_candidates, towel_patterns)
 
 
-print(design_possible(["brwrr"], read_lines(s)[0]))
+print(design_possible(["ubwu"], read_lines(s)[0]))
+# print(design_possible(["brwrr"], read_lines(s)[0])) # RETURN TRUE
 
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
-        self.small_input = read_lines(s)
         self.towel_patterns_small = read_lines(s)[0]
         self.towel_patterns_large = read_lines(l)[0]
 
     def test_possible_designs(self):
-        self.assertTrue(design_possible("brwrr", self.towel_patterns_small))
-        self.assertFalse(design_possible("ubwu", self.towel_patterns_small))
-        self.assertFalse(design_possible("bbrgwb", self.towel_patterns_small))
+        self.assertFalse(design_possible(["tone"], self.towel_patterns_small))
+        self.assertTrue(design_possible(["brwrr"], self.towel_patterns_small))
+        self.assertFalse(design_possible(["ubwu"], self.towel_patterns_small))
+        self.assertFalse(design_possible(["bbrgwb"], self.towel_patterns_small))
