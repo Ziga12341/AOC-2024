@@ -1,5 +1,6 @@
 import unittest
 from typing import Tuple, List, Any
+from functools import lru_cache
 
 s = "small_input.txt"
 l = "input.txt"
@@ -25,7 +26,7 @@ small_input = read_lines(s)
 large_input = read_lines(l)
 print(small_input)
 
-
+@lru_cache
 def design_possible(design_candidates: list, towel_patterns: list) -> bool:
     new_design_candidates = []
     # stop condition: there is no candidate in design_candidates which would have one of towel_patterns in string -
@@ -56,11 +57,19 @@ def design_possible(design_candidates: list, towel_patterns: list) -> bool:
 # print(design_possible(["brwrr"], read_lines(s)[0])) # RETURN TRUE
 
 def count_possible_designs(file_name):
-    ...
+    counter = 0
+    towel_patterns, list_of_designs = read_lines(file_name)
+    for design in list_of_designs:
+        counter += design_possible([design], towel_patterns)
+    return counter
+
+
+# print("First part: ", count_possible_designs(l))
 
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
+        self.s = "small_input.txt"
         self.towel_patterns_small = read_lines(s)[0]
         self.towel_patterns_large = read_lines(l)[0]
 
@@ -69,3 +78,6 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(design_possible(["brwrr"], self.towel_patterns_small))
         self.assertFalse(design_possible(["ubwu"], self.towel_patterns_small))
         self.assertFalse(design_possible(["bbrgwb"], self.towel_patterns_small))
+
+    def test_count_possible(self):
+        self.assertEqual(count_possible_designs(self.s), 6)
