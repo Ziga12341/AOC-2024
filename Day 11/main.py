@@ -99,18 +99,136 @@ def blink_n_times(first_arrangement, n):
                         list_after_blink.append(second_int)
                 else:
                     list_after_blink.append(stone * 2024)
-            return blink_n_times(first_arrangement, n-1)
+            return blink_n_times(first_arrangement, n - 1)
+
+
+@lru_cache(maxsize=None)
+def blink_n_times(first_arrangement, n):
+    len_arrangements = 0
+    if n == 0:
+        return len(first_arrangement)
+    else:
+        next_arrangement = []
+        for stone in first_arrangement:
+            if stone == 0:
+                next_arrangement.append(1)
+            else:
+                len_stone = len(str(stone))
+                if len_stone % 2 == 0 and stone != 0:
+                    first = str(stone)[:len_stone // 2]
+                    second = str(stone)[len_stone // 2:]
+                    first_int = int(first)
+                    second_int = int(second)
+                    if set(first) == {'0'}:
+                        next_arrangement.append(0)
+                    else:
+                        next_arrangement.append(first_int)
+                    if set(second) == {'0'}:
+                        next_arrangement.append(0)
+                    else:
+                        next_arrangement.append(second_int)
+                else:
+                    next_arrangement.append(stone * 2024)
+        return blink_n_times(tuple(next_arrangement), n - 1)
+
+
+# @lru_cache(maxsize=None)
+# def blink_stone(stone: int, n: int) -> int:
+#     len_arrangements = 0
+#     len_stone = len(str(stone))
+#
+#     # stop condition
+#     if n == 0:
+#         return len_arrangements
+#
+#     if stone == 0:
+#         stone = 1
+#         len_arrangements += 1
+#     elif not len_stone % 2 == 0 and stone != 0:
+#         stone = stone * 2024
+#         len_arrangements += 1
+#
+#     else:
+#         two_stones = []
+#         if len_stone % 2 == 0 and stone != 0:
+#             first = str(stone)[:len_stone // 2]
+#             second = str(stone)[len_stone // 2:]
+#             first_int = int(first)
+#             second_int = int(second)
+#             if set(first) == {'0'}:
+#                 two_stones.append(0)
+#             else:
+#                 two_stones.append(first_int)
+#             if set(second) == {'0'}:
+#                 two_stones.append(0)
+#             else:
+#                 two_stones.append(second_int)
+#         for stone in two_stones:
+#             len_arrangements += 1
+#             (blink_stone(stone, n - 1))
+#
+#     return len_arrangements
+
+
+@lru_cache(maxsize=None)
+def blink_stone(stone: int, n: int) -> int:
+    len_arrangements = 0
+    if n == 0:
+        return len_arrangements
+    else:
+        # next_arrangement = []
+        if stone == 0:
+            len_arrangements += 1
+            blink_stone(1, n - 1)
+            # next_arrangement.append(1)
+        else:
+            len_stone = len(str(stone))
+            if len_stone % 2 == 0 and stone != 0:
+                first = str(stone)[:len_stone // 2]
+                second = str(stone)[len_stone // 2:]
+                first_int = int(first)
+                second_int = int(second)
+                if set(first) == {'0'}:
+                    # next_arrangement.append(0)
+                    len_arrangements += 1
+                    blink_stone(0, n - 1)
+
+                else:
+                    len_arrangements += 1
+                    blink_stone(first_int, n - 1)
+
+                    # next_arrangement.append(first_int)
+                if set(second) == {'0'}:
+                    len_arrangements += 1
+                    blink_stone(0, n - 1)
+
+                    # next_arrangement.append(0)
+                else:
+                    len_arrangements += 1
+                    blink_stone(second_int, n - 1)
+
+                    # next_arrangement.append(second_int)
+            else:
+                # next_arrangement.append(stone * 2024)
+                len_arrangements += 1
+                blink_stone(stone * 2024, n - 1)
+    print(stone)
+
+
+print(blink_stone(125, 7))
+# print(blink_stone(17, 6))
+
+# print("blink n", blink_n_times(tuple(small_input), 6))
+# print("blink n", blink_n_times(tuple([17]), 6))
+# print("blink n", blink_n_times(tuple(large_input), 25))
 
 
 # 1
 # def count_stones(first_arrangement, n):
 #     return blink_n_times(first_arrangement, n)
-sumaza = 0
-for element in small_input:
-    sumaza += (blink_n_times([element], 6))
 
-print(sumaza)
-print("First part: ", blink_n_times(large_input, 6))
+# for stone in large_input:
+#     print("First part: ", blink_n_times(stone, 6))
 
 #
 # class TestFunctions(unittest.TestCase):
