@@ -132,6 +132,7 @@ def design_possible(design: str, file_name:str) -> bool:
 
 print(design_possible("ubwu", s))  # FAlse
 print(design_possible("brwrr", s))  # RETURN TRUE
+print(design_possible("rgbwu", s))  # RETURN False
 
 
 def count_possible_designs(file_name):
@@ -160,6 +161,7 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(design_possible("brwrr", self.s))
         self.assertFalse(design_possible("ubwu", self.s))
         self.assertFalse(design_possible("bbrgwb", self.s))
+        self.assertFalse(design_possible("rgbwu", self.s))
 
     def test_count_possible(self):
         self.assertEqual(count_possible_designs(self.s), 6)
