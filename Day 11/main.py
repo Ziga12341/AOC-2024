@@ -249,8 +249,15 @@ def blink_stone(stone: int, n: int) -> int:
     return total_arrangements
 
 
-print(blink_stone(125, 25))
-print(blink_stone(17, 25))
+def count_stones_when_blinking(file_name, blink_times):
+    counter = 0
+    for stone in read_lines(file_name):
+        counter += blink_stone(stone, blink_times)
+    return counter
+
+print("First part: ", count_stones_when_blinking(l, 25))
+print("Second part: ", count_stones_when_blinking(l, 75))
+
 
 # print("blink n", blink_n_times(tuple(small_input), 6))
 # print("blink n", blink_n_times(tuple([17]), 6))
