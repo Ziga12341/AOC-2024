@@ -172,9 +172,9 @@ def blink_n_times(first_arrangement, n):
 
 @lru_cache(maxsize=None)
 def blink_stone(stone: int, n: int) -> int:
-    global len_arrangements
+    len_arrangements = 0
     if n == 0:
-        return
+        return 1
     else:
         # next_arrangement = []
         if stone == 0:
@@ -212,12 +212,45 @@ def blink_stone(stone: int, n: int) -> int:
                 # next_arrangement.append(stone * 2024)
                 len_arrangements += 1
                 blink_stone(stone * 2024, n - 1)
-    print(stone)
+    print(len_arrangements)
 
-len_arrangements = 0
-print(blink_stone(125, 75))
-print(len_arrangements)
-# print(blink_stone(17, 6))
+
+from functools import lru_cache
+
+
+@lru_cache(maxsize=None)
+def blink_stone(stone: int, n: int) -> int:
+    total_arrangements = 0
+
+    if n == 0:
+        return 1
+
+    if stone == 0:
+        total_arrangements += blink_stone(1, n - 1)
+    else:
+        len_stone = len(str(stone))
+        if len_stone % 2 == 0 and stone != 0:
+            first = str(stone)[:len_stone // 2]
+            second = str(stone)[len_stone // 2:]
+            first_int = int(first)
+            second_int = int(second)
+
+            if set(first) == {'0'}:
+                total_arrangements += blink_stone(0, n - 1)
+            else:
+                total_arrangements += blink_stone(first_int, n - 1)
+
+            if set(second) == {'0'}:
+                total_arrangements += blink_stone(0, n - 1)
+            else:
+                total_arrangements += blink_stone(second_int, n - 1)
+        else:
+            total_arrangements += blink_stone(stone * 2024, n - 1)
+    return total_arrangements
+
+
+print(blink_stone(125, 25))
+print(blink_stone(17, 25))
 
 # print("blink n", blink_n_times(tuple(small_input), 6))
 # print("blink n", blink_n_times(tuple([17]), 6))
