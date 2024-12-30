@@ -70,33 +70,23 @@ def design_possible(design: str, file_name: str) -> bool:
 #
 #     return False  # Return False # we did now destruct design
 
+
+@cache
 def count_ways_to_make_different_design(design: str, file_name):
     towel_patterns, list_of_designs = read_lines(file_name)
     count_ways = 0
     if not design:
         return 1
-
     else:
-        all_options = set()
         for pattern in towel_patterns:
             # i should check only the beginning of pattern and slice from there
             if design.startswith(pattern):
                 new_design = design[len(pattern):]
-                all_options.add(new_design)
-        for option in all_options:
-            count_ways += count_ways_to_make_different_design(option, file_name)
+                count_ways += count_ways_to_make_different_design(new_design, file_name)
     return count_ways
 
 
-def all_possible_ways(file_name):
-    counter = 0
-    towel_patterns, list_of_designs = read_lines(file_name)
-    for design in list_of_designs:
-        counter += count_ways_to_make_different_design(design, file_name)
-
-    return counter
-
-
+# part one
 def count_possible_designs(file_name):
     counter = 0
     towel_patterns, list_of_designs = read_lines(file_name)
@@ -106,7 +96,17 @@ def count_possible_designs(file_name):
     return counter
 
 
-# print("First part: ", count_possible_designs(l))
+# part two
+def all_possible_ways(file_name):
+    counter = 0
+    towel_patterns, list_of_designs = read_lines(file_name)
+    for design in list_of_designs:
+        counter += count_ways_to_make_different_design(design, file_name)
+
+    return counter
+
+
+print("First part: ", count_possible_designs(l))
 print("Second part: ", all_possible_ways(l))
 
 
