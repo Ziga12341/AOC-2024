@@ -77,12 +77,12 @@ def count_ways_to_make_different_design(design: str, file_name):
         return 1
 
     else:
-        all_options = []
+        all_options = set()
         for pattern in towel_patterns:
             # i should check only the beginning of pattern and slice from there
             if design.startswith(pattern):
                 new_design = design[len(pattern):]
-                all_options.append(new_design)
+                all_options.add(new_design)
         for option in all_options:
             count_ways += count_ways_to_make_different_design(option, file_name)
     return count_ways
@@ -107,7 +107,7 @@ def count_possible_designs(file_name):
 
 
 # print("First part: ", count_possible_designs(l))
-# print("Second part: ", all_possible_ways(l))
+print("Second part: ", all_possible_ways(l))
 
 
 class TestFunctions(unittest.TestCase):
