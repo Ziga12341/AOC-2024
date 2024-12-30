@@ -22,10 +22,6 @@ def read_lines(file_name: str) -> tuple[list[Any] | list[str], list[str]]:
         return towel_patterns, list_of_designs
 
 
-small_input = read_lines(s)
-large_input = read_lines(l)
-
-
 @cache
 def design_possible(design: str, file_name: str) -> bool:
     towel_patterns, list_of_designs = read_lines(file_name)
@@ -86,28 +82,14 @@ def count_ways_to_make_different_design(design: str, file_name):
     return count_ways
 
 
-# part one
-def count_possible_designs(file_name):
-    counter = 0
-    towel_patterns, list_of_designs = read_lines(file_name)
-    for design in list_of_designs:
-        counter += design_possible(design, file_name)
-
-    return counter
+# refactor function... universal function for part one and part two... the only difference is which function we take for sum
+# read_lines(file_name)[1] are all design inputs
+def count_possible_designs(file_name, function):
+    return sum(function(design, file_name) for design in read_lines(file_name)[1])
 
 
-# part two
-def all_possible_ways(file_name):
-    counter = 0
-    towel_patterns, list_of_designs = read_lines(file_name)
-    for design in list_of_designs:
-        counter += count_ways_to_make_different_design(design, file_name)
-
-    return counter
-
-
-print("First part: ", count_possible_designs(l))
-print("Second part: ", all_possible_ways(l))
+print("First part: ", count_possible_designs(l, design_possible))
+print("Second part: ", count_possible_designs(l, count_ways_to_make_different_design))
 
 
 class TestFunctions(unittest.TestCase):
@@ -125,8 +107,8 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(design_possible("rgbwu", self.s))
 
     def test_count_possible(self):
-        self.assertEqual(count_possible_designs(self.s), 6)
-        self.assertEqual(count_possible_designs(self.l), 336)
+        self.assertEqual(count_possible_designs(self.s, design_possible), 6)
+        self.assertEqual(count_possible_designs(self.l, design_possible), 336)
 
     def test_different_ways(self):
         self.assertEqual(count_ways_to_make_different_design("rrbgbr", self.s), 6)
@@ -135,4 +117,4 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(count_ways_to_make_different_design("brgr", self.s), 2)
 
     def test_count_ways_to_make_design_part_2(self):
-        self.assertEqual(all_possible_ways(self.s), 16)
+        self.assertEqual(count_possible_designs(self.s, count_ways_to_make_different_design), 16)
