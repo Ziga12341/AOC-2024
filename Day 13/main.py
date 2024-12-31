@@ -1,16 +1,33 @@
 import unittest
+from typing import List, Tuple
 
 s = "small_input.txt"
 l = "input.txt"
 
 
-def read_lines(file: str) -> list:
-    with open(file, "r", encoding="utf-8") as file:
-        return [line.strip() for line in file]
+def read_lines(file_name: str) -> list[tuple[tuple[int, int], ...]]:
+    with open(file_name, "r", encoding="utf-8") as file_name:
+        claw_machines = []
+        accumulator = []
+        for line in file_name:
+
+            # in case of new line
+            if line == "\n":
+                claw_machines.append(tuple(accumulator))
+                accumulator = []
+            else:
+                x_and_y_only = line.strip().split(": ")[1]
+                x, y = x_and_y_only.split(",")
+                x = int(x[2:])
+                y = int(y[3:])
+                accumulator.append((x, y))
+        return claw_machines
 
 
-small_input: list[str] = read_lines(s)
-large_input: list[str] = read_lines(l)
+
+
+small_input:list[tuple[tuple[int, int], ...]] = read_lines(s)
+large_input: list[tuple[tuple[int, int], ...]] = read_lines(l)
 
 print(small_input)
 
@@ -28,13 +45,22 @@ def calculate_lowest_price(xa, ya, xb, yb, xp, yp):
 
 
 print(calculate_lowest_price(94, 34, 22, 67, 8400, 5400))
+def sum_lowest_price_per_claw_machines(file_name):
+    return sum(calculate_lowest_price(first[0], first[1], second[0], second[1], price[0], price[1]) for first, second, price in read_lines(file_name))
 
+print(sum_lowest_price_per_claw_machines(s))
+print("First part: ", sum_lowest_price_per_claw_machines(l))
+# too low : 31614
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input: list[str] = read_lines(s)
+        self.s = "small_input.txt"
 
     def test_lowest_price(self):
         self.assertEqual(calculate_lowest_price(94, 34, 22, 67, 8400, 5400), 280)
         self.assertEqual(calculate_lowest_price(17, 86, 84, 37, 7870, 6450), 200)
         self.assertEqual(calculate_lowest_price(7, 8, 8, 7, 7870, 6450), 0)
+
+    def test_sum_lowest_price(self):
+        self.assertEqual(sum_lowest_price_per_claw_machines(self.s), 480)
