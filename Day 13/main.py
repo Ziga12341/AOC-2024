@@ -1,5 +1,4 @@
 import unittest
-from typing import List, Tuple
 
 s = "small_input.txt"
 l = "input.txt"
@@ -41,42 +40,14 @@ def calculate_lowest_price(xa, ya, xb, yb, xp, yp):
     return min(collect_prices) if collect_prices else 0
 
 
-def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
-    # calculation for x
-    xp = xp + 10000000000000
-    yp = yp + 10000000000000
-    get_all_price_x_times_press_a = set()
-    for press_a_n_times in reversed(range(xp // xa)):
-        if (xp - press_a_n_times * xa) % xb == 0 and (yp - press_a_n_times * ya) % yb == 0:
-            return (press_a_n_times * 3) + (xp - press_a_n_times * xa) // xb
-        else:
-            return 0
-    #
-    # # calculation for y
-    # get_all_price_y_times_press_a = set()
-    # for m in range(yp // ya):
-    #     if (yp - m * ya) % yb == 0:
-    #         get_all_price_y_times_press_a.add(m)
-    #
-    # # biggest element that is in for both x and y price times_press_a
-    #
-    # times_press_a_in_x_and_y = get_all_price_y_times_press_a & get_all_price_x_times_press_a
-    # # handle classes where we do not have any match
-    # if times_press_a_in_x_and_y:
-    #     biggest_button_a_for_x_and_y = max(times_press_a_in_x_and_y)
-    # else:
-    #     return 0
-    # # calculate press b
-    # press_b = (xp - biggest_button_a_for_x_and_y * xa) // xb
-    #
-    # return biggest_button_a_for_x_and_y * 3 + press_b
+# do not work with loops because too big loops
 
-
-
+# get both part of equations equal to times_pressed_a_button
 # (8400 - 22*times_b) * 34 = (5400 - 67*times_b) * 94
 # (8400 * 34) - (5400 * 94) = 22*times_b * 34 - 67*times_b * 94
+# solved this puzzle only with algebra
 def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
-    # add values to xp
+    # add values initial values for part 2 to xp
     xp = xp + 10000000000000
     yp = yp + 10000000000000
 
@@ -84,19 +55,18 @@ def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
     left_part_of_equation = (xp * ya) - (yp * xa)
     right_part_of_equation_press_times_b = (ya * xb) - (yb * xa)
     press_b_n_times = left_part_of_equation / right_part_of_equation_press_times_b
+
+    # check if press b is a whole number... if it is not, there wasn't a case with (delitelj) right number
     if press_b_n_times == int(press_b_n_times):
         # calculate press a from press b
         # ( 8400 - ( 22 * 40) ) / 94
-        press_a_n_times =  (xp - (xb * press_b_n_times)) / xa
+        press_a_n_times = (xp - (xb * press_b_n_times)) / xa
 
-        return press_a_n_times * 3  + press_b_n_times
-
+        return press_a_n_times * 3 + press_b_n_times
     else:
         return 0
 
-# print(calculate_lowest_price_part_2(94, 34, 22, 67, 8400, 5400))
-print(calculate_lowest_price_part_2(17, 86, 84, 37, 7870, 6450))
-print(calculate_lowest_price_part_2(26, 66, 67, 21, 12748, 12176))
+
 def sum_lowest_price_per_claw_machines(file_name):
     return sum(calculate_lowest_price(button_a[0], button_a[1], button_b[0], button_b[1], price[0], price[1]) for
                button_a, button_b, price in read_lines(file_name))
@@ -107,13 +77,13 @@ def sum_lowest_price_per_claw_machines_second_part(file_name):
                button_a, button_b, price in read_lines(file_name))
 
 
-# print("First part: ", sum_lowest_price_per_claw_machines(l))
+print("First part: ", sum_lowest_price_per_claw_machines(l))
 print("Second part: ", sum_lowest_price_per_claw_machines_second_part(l))
 
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
-        self.small_input: list[str] = read_lines(s)
+        self.small_input = read_lines(s)
         self.s = "small_input.txt"
         self.l = "input.txt"
 
