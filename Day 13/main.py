@@ -43,15 +43,15 @@ def calculate_lowest_price(xa, ya, xb, yb, xp, yp):
 
 def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
     # calculation for x
-    # xp = xp + 10000000000000
-    # yp = yp + 10000000000000
+    xp = xp + 10000000000000
+    yp = yp + 10000000000000
     get_all_price_x_times_press_a = set()
-    for n in reversed(range(xp // xa)):
-        if (xp - n * xa) % xb == 0:
-            if (yp - n * ya) % yb == 0:
-                return (n * 3) + (xp - n * xa) // xb
-            else:
-                return 0
+    for press_a_n_times in reversed(range(xp // xa)):
+        if (xp - press_a_n_times * xa) % xb == 0:
+            if (yp - press_a_n_times * ya) % yb == 0:
+                return (press_a_n_times * 3) + (xp - press_a_n_times * xa) // xb
+    else:
+        return 0
     #
     # # calculation for y
     # get_all_price_y_times_press_a = set()
@@ -73,8 +73,8 @@ def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
     # return biggest_button_a_for_x_and_y * 3 + press_b
 
 
-print(calculate_lowest_price_part_2(94, 34, 22, 67, 8400, 5400))
-
+# print(calculate_lowest_price_part_2(94, 34, 22, 67, 8400, 5400))
+print(calculate_lowest_price_part_2(17, 86, 84, 37, 7870, 6450))
 
 def sum_lowest_price_per_claw_machines(file_name):
     return sum(calculate_lowest_price(button_a[0], button_a[1], button_b[0], button_b[1], price[0], price[1]) for
@@ -87,6 +87,7 @@ def sum_lowest_price_per_claw_machines_second_part(file_name):
 
 
 print("First part: ", sum_lowest_price_per_claw_machines(l))
+# print("Second part: ", sum_lowest_price_per_claw_machines_second_part(l))
 
 
 class TestFunctions(unittest.TestCase):
