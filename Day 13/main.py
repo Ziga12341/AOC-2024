@@ -47,11 +47,10 @@ def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
     yp = yp + 10000000000000
     get_all_price_x_times_press_a = set()
     for press_a_n_times in reversed(range(xp // xa)):
-        if (xp - press_a_n_times * xa) % xb == 0:
-            if (yp - press_a_n_times * ya) % yb == 0:
-                return (press_a_n_times * 3) + (xp - press_a_n_times * xa) // xb
-    else:
-        return 0
+        if (xp - press_a_n_times * xa) % xb == 0 and (yp - press_a_n_times * ya) % yb == 0:
+            return (press_a_n_times * 3) + (xp - press_a_n_times * xa) // xb
+        else:
+            return 0
     #
     # # calculation for y
     # get_all_price_y_times_press_a = set()
@@ -73,9 +72,31 @@ def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
     # return biggest_button_a_for_x_and_y * 3 + press_b
 
 
+
+# (8400 - 22*times_b) * 34 = (5400 - 67*times_b) * 94
+# (8400 * 34) - (5400 * 94) = 22*times_b * 34 - 67*times_b * 94
+def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
+    # add values to xp
+    xp = xp + 10000000000000
+    yp = yp + 10000000000000
+
+    # solve algebra
+    left_part_of_equation = (xp * ya) - (yp * xa)
+    right_part_of_equation_press_times_b = (ya * xb) - (yb * xa)
+    press_b_n_times = left_part_of_equation / right_part_of_equation_press_times_b
+    if press_b_n_times == int(press_b_n_times):
+        # calculate press a from press b
+        # ( 8400 - ( 22 * 40) ) / 94
+        press_a_n_times =  (xp - (xb * press_b_n_times)) / xa
+
+        return press_a_n_times * 3  + press_b_n_times
+
+    else:
+        return 0
+
 # print(calculate_lowest_price_part_2(94, 34, 22, 67, 8400, 5400))
 print(calculate_lowest_price_part_2(17, 86, 84, 37, 7870, 6450))
-
+print(calculate_lowest_price_part_2(26, 66, 67, 21, 12748, 12176))
 def sum_lowest_price_per_claw_machines(file_name):
     return sum(calculate_lowest_price(button_a[0], button_a[1], button_b[0], button_b[1], price[0], price[1]) for
                button_a, button_b, price in read_lines(file_name))
@@ -86,8 +107,8 @@ def sum_lowest_price_per_claw_machines_second_part(file_name):
                button_a, button_b, price in read_lines(file_name))
 
 
-print("First part: ", sum_lowest_price_per_claw_machines(l))
-# print("Second part: ", sum_lowest_price_per_claw_machines_second_part(l))
+# print("First part: ", sum_lowest_price_per_claw_machines(l))
+print("Second part: ", sum_lowest_price_per_claw_machines_second_part(l))
 
 
 class TestFunctions(unittest.TestCase):
@@ -100,8 +121,11 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(calculate_lowest_price(94, 34, 22, 67, 8400, 5400), 280)
         self.assertEqual(calculate_lowest_price(17, 86, 84, 37, 7870, 6450), 200)
         self.assertEqual(calculate_lowest_price(7, 8, 8, 7, 7870, 6450), 0)
-        self.assertEqual(calculate_lowest_price_part_2(94, 34, 22, 67, 8400, 5400), 280)
-        self.assertEqual(calculate_lowest_price_part_2(17, 86, 84, 37, 7870, 6450), 200)
+
+    def test_lowest_price_second_part(self):
+        self.assertEqual(calculate_lowest_price_part_2(94, 34, 22, 67, 8400, 5400), 0)
+        self.assertNotEquals(calculate_lowest_price_part_2(26, 66, 67, 21, 12748, 12176), 0)
+        self.assertEquals(calculate_lowest_price_part_2(17, 86, 84, 37, 7870, 6450), 0)
 
     def test_sum_lowest_price(self):
         self.assertEqual(sum_lowest_price_per_claw_machines(self.s), 480)
