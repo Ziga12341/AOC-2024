@@ -21,15 +21,12 @@ def read_lines(file_name: str) -> list[tuple[tuple[int, int], ...]]:
                 x = int(x[2:])
                 y = int(y[3:])
                 accumulator.append((x, y))
+        claw_machines.append(tuple(accumulator))
         return claw_machines
 
 
-
-
-small_input:list[tuple[tuple[int, int], ...]] = read_lines(s)
+small_input: list[tuple[tuple[int, int], ...]] = read_lines(s)
 large_input: list[tuple[tuple[int, int], ...]] = read_lines(l)
-
-print(small_input)
 
 
 def calculate_lowest_price(xa, ya, xb, yb, xp, yp):
@@ -44,18 +41,19 @@ def calculate_lowest_price(xa, ya, xb, yb, xp, yp):
     return min(collect_prices) if collect_prices else 0
 
 
-print(calculate_lowest_price(94, 34, 22, 67, 8400, 5400))
 def sum_lowest_price_per_claw_machines(file_name):
-    return sum(calculate_lowest_price(first[0], first[1], second[0], second[1], price[0], price[1]) for first, second, price in read_lines(file_name))
+    return sum(calculate_lowest_price(button_a[0], button_a[1], button_b[0], button_b[1], price[0], price[1]) for
+               button_a, button_b, price in read_lines(file_name))
 
-print(sum_lowest_price_per_claw_machines(s))
+
 print("First part: ", sum_lowest_price_per_claw_machines(l))
-# too low : 31614
+
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input: list[str] = read_lines(s)
         self.s = "small_input.txt"
+        self.l = "input.txt"
 
     def test_lowest_price(self):
         self.assertEqual(calculate_lowest_price(94, 34, 22, 67, 8400, 5400), 280)
@@ -64,3 +62,4 @@ class TestFunctions(unittest.TestCase):
 
     def test_sum_lowest_price(self):
         self.assertEqual(sum_lowest_price_per_claw_machines(self.s), 480)
+        self.assertEqual(sum_lowest_price_per_claw_machines(self.l), 31897)
