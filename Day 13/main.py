@@ -1,4 +1,5 @@
 import unittest
+from typing import List, Tuple
 
 s = "small_input.txt"
 l = "input.txt"
@@ -45,9 +46,8 @@ def calculate_lowest_price(xa, ya, xb, yb, xp, yp):
 # get both part of equations equal to times_pressed_a_button
 # (8400 - 22*times_b) * 34 = (5400 - 67*times_b) * 94
 # (8400 * 34) - (5400 * 94) = 22*times_b * 34 - 67*times_b * 94
-# solved this puzzle only with algebra
 def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
-    # add values initial values for part 2 to xp
+    # add values initial valuse for part 2 to xp
     xp = xp + 10000000000000
     yp = yp + 10000000000000
 
@@ -55,14 +55,13 @@ def calculate_lowest_price_part_2(xa, ya, xb, yb, xp, yp):
     left_part_of_equation = (xp * ya) - (yp * xa)
     right_part_of_equation_press_times_b = (ya * xb) - (yb * xa)
     press_b_n_times = left_part_of_equation / right_part_of_equation_press_times_b
-
-    # check if press b is a whole number... if it is not, there wasn't a case with (delitelj) right number
     if press_b_n_times == int(press_b_n_times):
         # calculate press a from press b
         # ( 8400 - ( 22 * 40) ) / 94
         press_a_n_times = (xp - (xb * press_b_n_times)) / xa
 
         return press_a_n_times * 3 + press_b_n_times
+
     else:
         return 0
 
@@ -83,7 +82,7 @@ print("Second part: ", sum_lowest_price_per_claw_machines_second_part(l))
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
-        self.small_input = read_lines(s)
+        self.small_input: list[str] = read_lines(s)
         self.s = "small_input.txt"
         self.l = "input.txt"
 
