@@ -39,36 +39,41 @@ def calculate_robots_location_after_n_seconds(robot_initial, seconds, grid_x, gr
     move_to_y = velocity[1] * seconds
 
     if move_to_x < 0:
-        move_x_just_once_per_grid = (abs(move_to_x) % grid_x)
-        move_x_just_once_per_grid = - move_x_just_once_per_grid
+        move_x_just_once_per_grid = move_to_x % -grid_x
     else:
         move_x_just_once_per_grid = move_to_x % grid_x
 
     if move_to_y < 0:
-        move_y_just_once_per_grid = (abs(move_to_y) % grid_y)
-        move_y_just_once_per_grid = - move_y_just_once_per_grid
+        move_y_just_once_per_grid = move_to_y % -grid_y
     else:
         move_y_just_once_per_grid = move_to_y % grid_y
 
     new_position_x = move_x_just_once_per_grid + position[0]
     new_position_y = move_y_just_once_per_grid + position[1]
 
-    if new_position_x > grid_x:
+    if new_position_x > grid_x - 1:
         new_position_x = new_position_x - grid_x
     elif new_position_x < 0:
         new_position_x = new_position_x + grid_x
 
-    elif new_position_y > grid_y:
+    elif new_position_y > grid_y - 1:
         new_position_y = new_position_y - grid_y
     elif new_position_y < 0:
         new_position_y = new_position_y + grid_y
 
+    if new_position_y >= grid_y:
+        new_position_y = new_position_y - grid_y
+
+    if new_position_x >= grid_x:
+        new_position_x = new_position_x - grid_x
     return new_position_x, new_position_y
 
 
 # print(calculate_robots_location_after_n_seconds(((2, 4), (2, -3)), 5, 11, 7))
 print(calculate_robots_location_after_n_seconds(((6, 3), (-1, -3)), 100, 11, 7))
-
+print(calculate_robots_location_after_n_seconds(((10, 3), (-1, 2)), 100, 11, 7))
+print(calculate_robots_location_after_n_seconds(((7, 6), (-1, -3)), 100, 11, 7)) # problem with(6, 7) not that big grid!!
+print(calculate_robots_location_after_n_seconds(((0, 0), (1, 3)), 100, 11, 7)) # not that big
 # (9, 7) wrong?
 print([calculate_robots_location_after_n_seconds(robot_initial, 100, 11, 7) for robot_initial in read_lines(s)])
 def calculate_number_of_robots_in_quadrant(file_name, seconds, grid_x, grid_y):
@@ -89,11 +94,17 @@ def calculate_number_of_robots_in_quadrant(file_name, seconds, grid_x, grid_y):
             down_right_quadrant.append((x,y))
         else:
             print("middle", (x,y))
+    print(down_right_quadrant)
+    print(len(up_left_quadrant))
+    print(len(up_right_quadrant))
+    print(len(down_left_quadrant))
+    print(len(down_right_quadrant))
     return len(up_left_quadrant) * len(up_right_quadrant) * len(down_right_quadrant) * len(down_left_quadrant)
 
 
 print(calculate_number_of_robots_in_quadrant(s, 100, 11, 7))
-
+print(calculate_number_of_robots_in_quadrant(l, 100, 101, 103))
+#too low 207070080
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input: list[str] = read_lines(s)
@@ -101,8 +112,11 @@ class TestFunctions(unittest.TestCase):
 
     def test_move_after_time(self):
         self.assertEqual(calculate_robots_location_after_n_seconds(((2, 4), (2, -3)), 5, 11, 7), (1, 3))
-        self.assertEqual(calculate_robots_location_after_n_seconds(((0, 4), (3, -3)), 100, 11, 7),
-                         (3, 5))  # not 100 percent sure
+        self.assertEqual(calculate_robots_location_after_n_seconds(((6, 3), (-1, -3)), 100, 11, 7), (5, 4))
+        self.assertEqual(calculate_robots_location_after_n_seconds(((10, 3), (-1, 2)), 100, 11, 7), (9, 0))
+        self.assertEqual(calculate_robots_location_after_n_seconds(((0, 4), (3, -3)), 100, 11, 7),(3, 5))  # not 100 percent sure
+        self.assertEqual(calculate_robots_location_after_n_seconds(((2, 0), (2, -1)), 100, 11, 7), (4, 5)) # not (1, -1)
+        self.assertEqual(calculate_robots_location_after_n_seconds(((9, 3), (2, 3)), 100, 11, 7), (0, 2))
 
     def test_quadrants_multiplications(self):
         self.assertEqual(calculate_number_of_robots_in_quadrant(self.s, 100, 11,7), 12)
