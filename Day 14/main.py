@@ -93,6 +93,37 @@ print("Part 1: ", calculate_number_of_robots_in_quadrant(l, 100, 101, 103))
 
 # too low 207070080
 # right answer 226179492
+
+# tree shape... what coordinates are in three shape. start on the middle... and add each column two at edges
+
+def xmas_tree(wide, tall):
+    tree_coordinates = set()
+    upper_limit = wide // 2
+    lower_limit = wide // 2
+    for y in range(tall - 1):
+        upper_limit += 1
+        lower_limit += -1
+
+        for x in range(wide):
+            if x < upper_limit and x > lower_limit:
+                tree_coordinates.add((x, y))
+
+    tree_coordinates.add((wide // 2, tall - 1))
+    return tree_coordinates
+
+
+def all_robots_in_tree(grid_wide, grid_tall, file_name):
+    seconds = 1
+    while True:
+        if {calculate_robots_location_after_n_seconds(robot_initial, seconds, grid_wide, grid_tall) for robot_initial
+         in read_lines(file_name)}.issubset(xmas_tree(grid_wide, grid_tall)):
+            return seconds
+
+        seconds += 1
+
+print(all_robots_in_tree(11, 7, s))
+print(all_robots_in_tree(101, 103, l))
+
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         self.small_input: list[str] = read_lines(s)
