@@ -113,16 +113,23 @@ def xmas_tree(wide, tall):
 
 
 def all_robots_in_tree(grid_wide, grid_tall, file_name):
+    max_iteration = 1000000
     seconds = 1
-    while True:
-        if {calculate_robots_location_after_n_seconds(robot_initial, seconds, grid_wide, grid_tall) for robot_initial
-         in read_lines(file_name)}.issubset(xmas_tree(grid_wide, grid_tall)):
+    xmas_tree_locations = xmas_tree(grid_wide, grid_tall)
+    # get new robots arrangements every secon
+    while seconds < max_iteration:
+        current_robots_location = {calculate_robots_location_after_n_seconds(robot_initial, seconds, grid_wide, grid_tall) for robot_initial
+                                   in read_lines(file_name)}
+        # check if more than 85% of robots in xmas tree
+        if len(current_robots_location & xmas_tree_locations) >= len(current_robots_location) * 0.850:
             return seconds
+        else:
+            seconds += 1
 
-        seconds += 1
 
-print(all_robots_in_tree(11, 7, s))
-print(all_robots_in_tree(101, 103, l))
+# print(all_robots_in_tree(11, 7, s))
+print("Part 2: ", all_robots_in_tree(101, 103, l))
+
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
@@ -143,3 +150,6 @@ class TestFunctions(unittest.TestCase):
     def test_quadrants_multiplications(self):
         self.assertEqual(calculate_number_of_robots_in_quadrant(self.s, 100, 11, 7), 12)
         self.assertEqual(calculate_number_of_robots_in_quadrant(self.l, 100, 101, 103), 226179492)
+
+    def test_robots_in_tree(self):
+        self.assertEqual(all_robots_in_tree(101, 103, self.l), 7502)
