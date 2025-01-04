@@ -68,6 +68,7 @@ def calculate_robots_location_after_n_seconds(robot_initial, seconds, grid_x, gr
 
 
 def calculate_number_of_robots_in_quadrant(file_name, seconds, grid_x, grid_y):
+    # get all robots location after n seconds and provided grid size
     new_locations = [calculate_robots_location_after_n_seconds(robot_initial, seconds, grid_x, grid_y) for robot_initial
                      in read_lines(file_name)]
     up_left_quadrant = []
@@ -75,6 +76,7 @@ def calculate_number_of_robots_in_quadrant(file_name, seconds, grid_x, grid_y):
     down_left_quadrant = []
     down_right_quadrant = []
 
+    # do not take middle horizontal and vertical lines
     for x, y in new_locations:
         if x < (grid_x - 1) / 2 and y < (grid_y - 1) / 2:
             up_left_quadrant.append((x, y))
@@ -118,8 +120,9 @@ def all_robots_in_tree(grid_wide, grid_tall, file_name):
     xmas_tree_locations = xmas_tree(grid_wide, grid_tall)
     # get new robots arrangements every secon
     while seconds < max_iteration:
-        current_robots_location = {calculate_robots_location_after_n_seconds(robot_initial, seconds, grid_wide, grid_tall) for robot_initial
-                                   in read_lines(file_name)}
+        current_robots_location = {
+            calculate_robots_location_after_n_seconds(robot_initial, seconds, grid_wide, grid_tall) for robot_initial
+            in read_lines(file_name)}
         # check if more than 85% of robots in xmas tree
         if len(current_robots_location & xmas_tree_locations) >= len(current_robots_location) * 0.850:
             return seconds
@@ -127,7 +130,6 @@ def all_robots_in_tree(grid_wide, grid_tall, file_name):
             seconds += 1
 
 
-# print(all_robots_in_tree(11, 7, s))
 print("Part 2: ", all_robots_in_tree(101, 103, l))
 
 
