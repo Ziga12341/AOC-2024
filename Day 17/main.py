@@ -62,10 +62,8 @@ while instruction_pointer != len(program):
                 # not zero, it jumps by setting the instruction pointer to the value of its literal operand
                 # do not know how to implement this
                 # move to i - 1 because i will add instruction_pointer at the end of loop
-                for i, tuple_instruction in enumerate(program):
-                    opcode_0, operand_0 = tuple_instruction
-                    if operand_0 == operand:
-                        instruction_pointer = i - 1
+
+                instruction_pointer = operand - 1
         elif opcode == 4:
             # itwise XOR of register B and register C, then stores the result in register B
             register_b = register_b ^ register_c
